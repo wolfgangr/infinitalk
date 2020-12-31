@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 #
 
-my $device="/dev/hidraw0" ;
+# my $device="/dev/hidraw0" ;
+my $device="../dev_infini_serial";
 
 open HID, $device or die "cannot open $device - reason: $!" ;
 

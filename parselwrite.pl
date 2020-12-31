@@ -3,8 +3,11 @@
 use Data::Dumper ;
 use Time::HiRes ;
 
-my $device="/dev/hidraw0" ;
+# my $device="/dev/hidraw0" ;
 
+my $device="../dev_infini_serial" ;
+
+# $| = 1; # don't buffer output
 
 my ($cmd, $cnt);
 
@@ -22,10 +25,11 @@ my $string = (sprintf  "^%1s%03d%s", $cmd, (length ($cnt) +1), $cnt) ;
 
 open HID, ">" . $device or die "cannot open $device - reason: $!" ;
 
+# HID->autoflush(1);
 
 printf   "%s|\n", $string;
-# printf HID  "%s\r", $string;
-parsel_print ($string) ;
+printf HID  "%s\r", $string;
+# parsel_print ($string) ;
 
 
 close HID;
@@ -49,13 +53,14 @@ sub parsel_print {
 	  # my $nexdue = Time::HiRes::time() + 0.04 ; # wait one 
 	  # Time::HiRes::usleep (max(0, $timestamp +0.05));
 	  
-	  my $timediff = 0.3 + ($timestamp - Time::HiRes::time())  ;
+	  my $timediff = 0.05 + ($timestamp - Time::HiRes::time())  ;
 	  printf " >%f< ", $timediff ;
 	  if ($timediff > 0) { print "#" ; Time::HiRes::sleep($timediff ) } ;
-	  sleep(1) ;
+	  # sleep(1) ;
 	  # $timestamp = Time::HiRes::time() ;
 	  print $chunk, '|'; 
 	  print HID  $chunk;
+	  # syswrite HID , $chunk;
 
 	  $timestamp = Time::HiRes::time() ;
   }

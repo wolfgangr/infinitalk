@@ -37,7 +37,7 @@ exit;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # checkstring ($response)
-# returns (flag, length, (data) )
+# returns (flag, length, \(data) )
 sub checkstring {
   my $resp = shift @_;
   # my $coresubstr ($response , 0,-3  );
@@ -46,6 +46,7 @@ sub checkstring {
   ( my ($label, $len, $payload, $crc) = 
 	  ($resp =~ /\^(D)(\d{3})(.*)(\d{2})/) )  
 	  or return (0) ;
-  return ($label, $len, $payload, $crc);
+  my @data = split(',', $payload);
+  return ($label, $len, \@data , $crc);
 
 }

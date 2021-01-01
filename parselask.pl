@@ -68,7 +68,8 @@ sub checkstring {
 
   my @data = split(',', $payload);
   return ($label, $len,  \@data , 
-	  sprintf("%04x", unpack ('n', $crc,  )), 
-	  sprintf("%04x", $digest) );
+	  #  sprintf("%04x", unpack ('n', $crc,  )), 
+	  #  sprintf("%04x", $digest) 
+  );
 
 }

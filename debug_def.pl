@@ -7,7 +7,7 @@ use warnings;
 # import('./P17_def.pm6');
 # use P17_def ;
 our %p17;
-require ('./P17_def.pm6');
+require ('./P17_def.pl');
 
 # my %P17 = $P17_def::p17;
 

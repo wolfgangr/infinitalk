@@ -160,6 +160,33 @@ $p17{'GLTHV'} = {
 	factors=>[ 0.1 ] ,
 }, 	
 
+# curtesy riogrande
+# https://www.photovoltaikforum.com/thread/115416-infinisolar-3k-10k-logging-und-feedin-control/?postID=2160068#post2160068
+
+$p17{'EMINFO'} = {
+	tag=>'Energy Management info'  ,
+	use=>{ stat=>7, em=>1 },
+	fields=>[ '', 'default Feed-In power', 'actual PV-Power', 
+		'actual Feed-In power', 'actual reserved Hybrid power', '' ] ,
+	units=>[ '', ('kW') x 4 , '' ],
+	factors=>[ undef, (0.001) x 4,  ] ,
+};
+
+$p17{'HECS'} = {
+	tag=>'Energy control status',
+	use=>{ conf1=>1, em=>2 },
+	fields=>['Solar energy distribution of priority', 
+		'enbl charge battery', 
+		'enbl AC charge battery', 
+		'enbl feed power to utility', 
+		'enbl bat dischg to loads when solar input normal', 
+		'enbl bat dischg to loads when solar input loss', 
+		'enbl bat dischg to utility when solar input normal', 
+		'enbl bat dischg to utility when solar input loss',
+		'enbl Q(U) derating funcation'
+	], 
+};
+
 
 ###~~~~~~~~~~~~~~
 # to do:

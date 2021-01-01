@@ -2,6 +2,8 @@
 
 use Data::Dumper ;
 use Time::HiRes ;
+use Digest::CRC qw(crc) ;
+
 
 my $device="../dev_infini_serial" ;
 
@@ -50,8 +52,20 @@ sub checkstring {
 
   # compare real length with announced length
   return (0) if ( length($resp)-5-$len ) ;
-  
+ 
+  # https://crccalc.com/ - we have CRC-16/XMODEM of $resp1
+
+  # my $mycrc =  crc16($resp1) ;
+
+  # my $ctx = Digest::CRC->new(width=>16, init=>0x0000, xorout=>0x0000, 
+  #                        refout=>0, poly=>0x1021, refin=>0, cont=>1);
+
+  $digest = crc($resp1, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1); 
+
+  # $ctx->add($resp1) ;
+  # $digest = $ctx->digest;
+
   my @data = split(',', $payload);
-  return ($label, $len,  \@data , $crc);
+  return ($label, $len,  \@data , unpack ('H4', $crc,  ), sprintf("%04x", $digest) );
 
 }

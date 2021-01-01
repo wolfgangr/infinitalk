@@ -13,8 +13,11 @@ require ('./P17_def.pl');
 
 # print Dumper(\%p17);
 
+# my @keys = (keys %p17) ;
 
-foreach my $querytag (keys %p17) {
+my @keys = (sort { $p17{$a}->{'use'}->{'conf0'} <=> $p17{$b}->{'use'}->{'conf0'}     } keys %p17) ;
+
+foreach my $querytag ( @keys ) {
   my $query = $p17{$querytag};
   # print Dumper(\$query);
   # print $query->{'tag'};
@@ -22,6 +25,16 @@ foreach my $querytag (keys %p17) {
   printf "key: %s , label: %s \n", $querytag, $query->{'tag'}   ;
   # my @fieldlist = @$query{'fields'} ;
   my $flptr = $query->{'fields'} ;
+
+  my $usage= $query->{'use'} ;
+  # print Dumper($usage);
+  # printf "usage %s %d | %s %d" , (@$usage) ;
+
+  print "\t\tusage:  ";
+  while ( my ($k, $v) = each %$usage ) {
+    print "\t $k $v  ";
+  } 
+  print "\n";
 
   # print Dumper(@$flptr);
   foreach my $field ( @$flptr ) {

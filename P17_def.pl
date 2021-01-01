@@ -17,27 +17,32 @@ our %p17 = (
 
 $p17{'PI'} = {
 	tag=>'protocol ID',
+	use=>{ conf0=>0 }, 
 	fields=>[ qw(protocol) ]
 } ;
 
 $p17{'ID'} = {
         tag=>'series number',
+	use=>{ conf0=>1 },
         fields=>[ qw(ID) ]
 } ;
 
 $p17{'VFW'} = {
         tag=>'main CPU',
+	use=>{ conf0=>2 },
         fields=>[ qw(version) ]
 } ;
 
 $p17{'VFW2'} = {
         tag=>'secondary CPU'  ,
+	use=>{ conf0=>3 },
         fields=>[ qw(version) ]
 } ;
 
 
 $p17{'MD'} = {
         tag=>'device model',
+	use=>{ conf0=>4 },
         fields=>[ 'Machine number' ,  'Output rated VA', 'Output power factor', 
 	'AC input phase number', 'AC output phase number', 'Norminal AC output voltage', 
 	'Norminal AC input voltage', 'Battery piece number', 
@@ -46,6 +51,7 @@ $p17{'MD'} = {
 
 $p17{'GS'} = {
         tag=>'General status',
+	use=>{ stat=>1 },
         fields=>[
 	'Solar input voltage Solar1', 'Solar input voltage Solar2', 
 	'Solar input current Solar1', 'Solar input current Solar2', 
@@ -62,6 +68,7 @@ $p17{'GS'} = {
 
 $p17{'PS'} = {
         tag=>'Power status',
+	use=>{ stat=>2 },
         fields=>[
 	'Solar input power 1', 'Solar input power 2', 
 	'', '', '', '',
@@ -78,11 +85,13 @@ $p17{'PS'} = {
 
 $p17{'MOD'} = {
         tag=>'Working mode ',
+	use=>{ stat=>3 },
         fields=>['mode' ]
 } ;
 
 $p17{'T'} = {
         tag=>'inverter time',
+	use=>{ stat=>-1, conf0=>-1 },
         fields=>['timestring' ]
 } ;
 

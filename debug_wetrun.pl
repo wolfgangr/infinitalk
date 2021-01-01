@@ -60,8 +60,15 @@ foreach my $querytag ( @keys ) {
   for my $l (0 .. $#$valptr) {
       my $value = $$valptr[$l] ;  
       my $label = $$flptr[$l] ;
+      
+      my $unit = ${$query->{'units'}}[$l] ;
+      $unit = '' unless (defined ($unit) && ($unit) ); 
+      
+      my $factor = ${$query->{'factors'}}[$l] ;
+      # $factor = 1 unless (defined ($factor))
+      $value *= $factor if defined ($factor);
 
-      printf ( "\t%s (%s)\n",  $value,  $label );
+      printf ( "\t%s %s (%s)\n",  $value, $unit,  $label );
   }
   # print Dumper(@$flptr);
   # foreach my $field ( @$flptr ) {

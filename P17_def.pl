@@ -168,8 +168,11 @@ $p17{'EMINFO'} = {
 	use=>{ stat=>7, em=>1 },
 	fields=>[ '', 'default Feed-In power', 'actual PV-Power', 
 		'actual Feed-In power', 'actual reserved Hybrid power', '' ] ,
-	units=>[ '', ('kW') x 4 , '' ],
-	factors=>[ undef, (0.001) x 4,  ] ,
+	units=>[ '', ('W') x 4 , '' ],
+	factors=>[ undef, (1) x 4,  ] ,
+	# units=>[ '', ('kW') x 4 , '' ],
+	# factors=>[ undef, (0.001) x 4,  ] ,
+
 };
 
 $p17{'HECS'} = {
@@ -195,6 +198,16 @@ $p17{'ACCT'} = {
 		'Start time 2 enbl AC charger', 'End time 2 enbl AC charger' ], 
 	units=>[ ('HHMM') x 4 ] ,
 };
+
+$p17{'ACLT'} = {
+        tag=>'AC supply load time bucket',
+        use=>{ conf1=>3, em=>4 },
+        fields=>['Start time enbl AC supply to load', 'End time enbl AC supply to load' ],
+        units=>[ ('HHMM') x 2 ] ,
+};   
+
+
+
 
 ###~~~~~~~~~~~~~~
 # to do:

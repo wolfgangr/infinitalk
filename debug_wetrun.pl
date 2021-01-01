@@ -52,12 +52,18 @@ foreach my $querytag ( @keys ) {
   printf $INFINI  "%s\r", $qrys;
   my $response=<$INFINI>;
   printf ("\tresponse: %s\n",  substr ($response , 0,-3  ) ) ;
-  print Dumper ( checkstring ($response ));
+  # print Dumper ( checkstring ($response ));
 
-  # print Dumper(@$flptr);
-  foreach my $field ( @$flptr ) {
-    printf "\tfield: %s, \n", $field ;
+  my ($flag, $len, $valptr) = checkstring ($response );
+
+  printf ("\tflag: %s , len: %s , vars: %s \n", $flag, $len, $#$valptr) ;
+  for my $l (0 .. $#$valptr) {
+      printf ( "\t%s (%s)\n",  $$valptr[$l],  $$flptr[$l] );
   }
+  # print Dumper(@$flptr);
+  # foreach my $field ( @$flptr ) {
+  #   printf "\tfield: %s, \n", $field ;
+  # }
   # die "#### DEBUG ####";
 }
 

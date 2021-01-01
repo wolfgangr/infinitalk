@@ -206,8 +206,51 @@ $p17{'ACLT'} = {
         units=>[ ('HHMM') x 2 ] ,
 };   
 
+$p17{'FPADJ'} = {
+        tag=>'feeding grid power calibration',
+        use=>{ conf1=>4, em=>5 },
+	fields=>['total feeding grid direction', 'total feeding grid calibration power', 
+		'R feeding grid direction', 'R feeding grid calibration power', 
+		'S feeding grid direction', 'S feeding grid calibration power', 
+		'T feeding grid direction', 'T feeding grid calibration power', ] ,
+	units=>[ ( '' , 'W') x 4 ] ,
+	factors=>[ ( undef , 1) x 4 ] ,
+} ;
 
+$p17{'GOV'} = {
+        tag=>'AC input voltage acceptable range for feed power',
+        use=>{ conf2=>1 } ,
+	fields=>[ 'highest voltage', 'lowest voltage', 
+		'highest back voltage', 'lowest back voltage' ],  
+	units=>[   ( 'V' ) x 4 ] ,
+	factors=>[ ( 0.1 ) x 4 ] ,
+}; 
 
+$p17{'GOF'} = {
+        tag=>'AC input frequency acceptable range for feed power',
+        use=>{ conf2=>2 } ,
+        fields=>[ 'highest frequency', 'lowest frequency', 
+		'highest back frequency', 'lowest back frequency' ] ,  
+        units=>[   ( 'Hz' ) x 4 ] ,
+        factors=>[ ( 0.01 ) x 4 ] ,
+};
+
+# das ist in der Doku durchgestrichen, kommt aber
+$p17{'OPMP'} = {
+		tag=>'maximum output power', 
+		use=>{ conf2=>3 , em=>6 } ,
+		fields=>[ 'maximum power' ],
+		units=>[  'W' ] ,
+		factors=>[ 1 ] ,
+};
+
+$p17{'GPMP'} = {
+                tag=>'maximum power f feeding grid',
+                use=>{ conf2=>4 , em=>7 } ,
+                fields=>[ 'maximum power' ],
+                units=>[  'W' ] ,
+                factors=>[ 1 ] ,
+};
 
 ###~~~~~~~~~~~~~~
 # to do:

@@ -146,10 +146,25 @@ $p17{'WS'} = {
        	], 
 } ;
 
+$p17{'CFS'} = {
+        tag=>'current fault status',
+        use=>{ stat=>5 },
+	fields=>[  'latest fault code',   'latest fault ID in flash' ], 
+} ;
+
+$p17{'GLTHV'} = {
+        tag=>'AC input long-lime highest average voltage',
+        use=>{ stat=>6 },
+        fields=>[ 'AC input long-lime highest average voltage' ],
+	units=>[ 'V' ],
+	factors=>[ 0.1 ] ,
+}, 	
+
+
 ###~~~~~~~~~~~~~~
 # to do:
-# - stat data ... WS, GLTHV
-# - event lists: CFS fault states, HFSnn - history fault parameter
+# - stat data ...  GLTHV
+# - event lists: fault states, HFSnn - history fault parameter
 # - config .... still a lot ....
 # - irrelevant: ET m EY M D H ...
 # - MPPTV, SV, PV.. FET, FPPF AAPF, FPRA

@@ -10,7 +10,7 @@ $/ = "\r"  ; # set line deli,iter to CR
 
 while (<HID>) {
 
-	print ( substr ($_ , 0,-2  ), "\n" ) ;
+	print ( substr ($_ , 0,-3  ), "\n" ) ;
 
 }
 

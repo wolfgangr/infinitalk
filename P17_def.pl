@@ -252,6 +252,27 @@ $p17{'GPMP'} = {
                 factors=>[ 1 ] ,
 };
 
+
+$p17{'MPPTV'} = {
+	tag=>'Solar input MPPT acceptable range', 
+	use=>{ conf3=>1 },
+	fields=>[ 'highest voltage', 'lowest voltage' ], 
+	units=>[ ('V') x 2  ] ,
+	factors=>[ ( 0.1 ) x2 ],
+};
+
+$p17{'SV'} = {
+        tag=>'Solar input voltage acceptable range',
+        use=>{ conf3=>2 },
+        fields=>[ 'highest voltage', 'lowest voltage' ],
+        units=>[ ('V') x 2  ] ,
+        factors=>[ ( 0.1 ) x2 ],
+};
+
+
+
+
+
 ###~~~~~~~~~~~~~~
 # to do:
 # - stat data ...  GLTHV

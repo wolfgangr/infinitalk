@@ -60,7 +60,8 @@ $p17{'GS'} = {
 	'AC input frequency', 
 	'', '', '', 
 	'AC output voltage R', 'AC output voltage S', 'AC output voltage T', 
-	'AC output frequency', 
+	'AC output frequency',
+        '', '', '',	
 	'Inner temperature', 'Component max temp', 'External battery temp', 
 	'Setting change bit' ]
 } ;
@@ -71,7 +72,7 @@ $p17{'PS'} = {
 	use=>{ stat=>2 },
         fields=>[
 	'Solar input power 1', 'Solar input power 2', 
-	'', '', '', '',
+	'', '', '', '', '',
 	'AC output active power R', 'AC output active power S', 'AC output active power T', 
 	'AC output total active power', 
 	'AC output apperent power R', 'AC output apperent power S', 'AC output apperent power T',

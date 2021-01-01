@@ -129,14 +129,40 @@ $p17{'T'} = {
 } ;
 
 
+$p17{'WS'} = {
+        tag=>'warning status', 
+	use=>{ stat=>4 },
+	fields=>[ 
+		'Solar input 1 loss', 'Solar input 2 loss',
+		'Solar input 1 voltage too high', 'Solar input 2 voltage too high',
+		'Battery under', 'Battery low', 'Battery open',
+		'Battery voltage too high', 'Battery low in hybrid mode',
+		'Grid voltage high loss', 'Grid voltage low loss',
+		'Grid frequency high loss','Grid frequency low loss',
+		'AC input long-time average voltage over', 'AC input voltage loss',
+		'AC input frequency loss', 'AC input island', 'AC input phase dislocation',
+		'Over temperature', 'Over load',
+		'EPO active', 'AC input wave loss',
+       	], 
+} ;
+
+###~~~~~~~~~~~~~~
+# to do:
+# - stat data ... WS, GLTHV
+# - event lists: CFS fault states, HFSnn - history fault parameter
+# - config .... still a lot ....
+# - irrelevant: ET m EY M D H ...
+# - MPPTV, SV, PV.. FET, FPPF AAPF, FPRA
+# nice to have: DI, MAR (dfaults / max / min) as orientation .... 
 
 
 ## -----------------------
 
-$p17{'#'} = {
-        tag=>' ',
-        fields=>[ ]
-} ;
+# $p17{'#'} = {
+#         tag=>' ',
+#         fields=>[ ]
+# } ;
+
 
 
 ## keep this 1; below here! ~~~~~~~~ 

@@ -61,11 +61,14 @@ sub checkstring {
   #                        refout=>0, poly=>0x1021, refin=>0, cont=>1);
 
   $digest = crc($resp1, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1); 
+  return (0) unless $digest == unpack ('n', $crc  )  ;
 
   # $ctx->add($resp1) ;
   # $digest = $ctx->digest;
 
   my @data = split(',', $payload);
-  return ($label, $len,  \@data , unpack ('H4', $crc,  ), sprintf("%04x", $digest) );
+  return ($label, $len,  \@data , 
+	  sprintf("%04x", unpack ('n', $crc,  )), 
+	  sprintf("%04x", $digest) );
 
 }

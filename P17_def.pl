@@ -55,7 +55,9 @@ $p17{'MD'} = {
         fields=>[ 'Machine number' ,  'Output rated VA', 'Output power factor', 
 	'AC input phase number', 'AC output phase number', 'Norminal AC output voltage', 
 	'Norminal AC input voltage', 'Battery piece number', 
-	'Battery standard voltage per unit' ]
+	'Battery standard voltage per unit' ],
+	units=>[ '', VA, ('')x3, V, V, '', V ] ,
+	factors=>[ undef, 1,1,1,1, 0.1, 0.1 , 1, 0.1  ] ,
 } ;
 
 $p17{'GS'} = {

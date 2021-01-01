@@ -61,7 +61,7 @@ $p17{'GS'} = {
 
 
 $p17{'PS'} = {
-        tag=>'Power status ',
+        tag=>'Power status',
         fields=>[
 	'Solar input power 1', 'Solar input power 2', 
 	'', '', '', '',
@@ -75,6 +75,16 @@ $p17{'PS'} = {
 	]
 } ;
 
+
+$p17{'MOD'} = {
+        tag=>'Working mode ',
+        fields=>['mode' ]
+} ;
+
+$p17{'T'} = {
+        tag=>'inverter time',
+        fields=>['timestring' ]
+} ;
 
 
 ## -----------------------

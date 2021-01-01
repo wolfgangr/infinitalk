@@ -1,18 +1,27 @@
 # infini protocol P17 translated to a perl hash to guide all processing
 # Infini10KW&15KWprotocol.pdf
-# in
+# 
+# designed as central management point for command semantic
+# - stick to perl syntax rules!
+# - run debug_def.pl after updates to check for syntax and heavy logical errors
+# - run debug_dryrun.pl after updates to check data structure and compare field lists with printed protocol
+# - run debug_wetrun.pl to map real data from the inverter to the descriptions
 #
+# data structure:
+# - top level hash tag field: command name as to be sent to the infini
+# - tag=>'whatever' label to be assigned to the whole command
+# - fields=>[ ... ] perl list fo data field labels 
+# (todo) - units=>[ ... ] optional list of physical units, 
+# (todo) - factors=>[ .... ] optional list of scaling factors 
+# - use=>{ group=>seq } assignment of field to logical ordering, may be repeated
+#
+# include as follows:
+#  our %p17;
+#  require ('./P17_def.pl');
 
-# use Exporter qw(import);
-# our @EXPORT = qw (p17);
 
-our %p17 = ( 
-# 	foo=>'bar'
-);
 
-# our %p17;
-# $p17{'tralala'}='pipapo';
-
+our %p17 = ();
 
 
 $p17{'PI'} = {

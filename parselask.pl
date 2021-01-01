@@ -28,8 +28,24 @@ printf $HID  "%s\r", $string;
 my $response=<$HID>;
 print ( substr ($response , 0,-3  ), "\n" ) ;
 
+print Dumper ( checkstring ($response ));
+
 close $HID;
 
 exit;
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# checkstring ($response)
+# returns (flag, length, (data) )
+sub checkstring {
+  my $resp = shift @_;
+  # my $coresubstr ($response , 0,-3  );
+  # ^D0251496161801100008000000
+  # \^(D)(\d{3})(.*)(\d{2})$
+  ( my ($label, $len, $payload, $crc) = 
+	  ($resp =~ /\^(D)(\d{3})(.*)(\d{2})/) )  
+	  or return (0) ;
+  return ($label, $len, $payload, $crc);
 
+}

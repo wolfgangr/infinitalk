@@ -58,7 +58,10 @@ foreach my $querytag ( @keys ) {
 
   printf ("\tflag: %s , len: %s , vars: %s \n", $flag, $len, $#$valptr) ;
   for my $l (0 .. $#$valptr) {
-      printf ( "\t%s (%s)\n",  $$valptr[$l],  $$flptr[$l] );
+      my $value = $$valptr[$l] ;  
+      my $label = $$flptr[$l] ;
+
+      printf ( "\t%s (%s)\n",  $value,  $label );
   }
   # print Dumper(@$flptr);
   # foreach my $field ( @$flptr ) {

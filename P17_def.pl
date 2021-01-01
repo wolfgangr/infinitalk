@@ -72,7 +72,9 @@ $p17{'GS'} = {
 	'AC output frequency',
         '', '', '',	
 	'Inner temperature', 'Component max temp', 'External battery temp', 
-	'Setting change bit' ]
+	'Setting change bit' ] , 
+	units=>[ qw ( V V A A V % A V V V Hz A A A V V V Hz °C °C °C) ,'' ] , 
+	factors=>[ (0.1)x5, 1, (0.1)x4, 0.01, (0.1)x6, 0.01,   ] ,
 } ;
 
 

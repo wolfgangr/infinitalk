@@ -15,7 +15,10 @@ require ('./P17_def.pl');
 
 # my @keys = (keys %p17) ;
 
-my @keys = (sort { $p17{$a}->{'use'}->{'conf0'} <=> $p17{$b}->{'use'}->{'conf0'}     } keys %p17) ;
+my @keys = (
+	sort { $p17{$a}->{'use'}->{'conf0'} <=> $p17{$b}->{'use'}->{'conf0'} } 
+	map {  defined ( $p17{$_}->{'use'}->{'conf0'} ) ? ($_) : () }
+	keys %p17) ;
 
 foreach my $querytag ( @keys ) {
   my $query = $p17{$querytag};

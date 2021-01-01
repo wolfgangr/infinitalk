@@ -91,7 +91,9 @@ $p17{'PS'} = {
 	'AC output power percentage', 'AC output connect status',
 	'Solar input 1 work status', 'Solar input 2 work status',
 	'Battery power direction', 'DC/AC power direction', 'Line power direction'       
-	]
+	], 
+	units=>[ ('W') x 11, ('VA') x 4, ('%') ], 
+	factors=>[ 1,1, (undef) x5,  (1) x 9 ],
 } ;
 
 

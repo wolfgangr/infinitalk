@@ -188,6 +188,14 @@ $p17{'HECS'} = {
 };
 
 
+$p17{'ACCT'} = {
+        tag=>'AC charge time bucket',
+        use=>{ conf1=>2, em=>3 },
+        fields=>['Start time 1 enbl AC charger', 'End time 1 enbl AC charger', 
+		'Start time 2 enbl AC charger', 'End time 2 enbl AC charger' ], 
+	units=>[ ('HHMM') x 4 ] ,
+};
+
 ###~~~~~~~~~~~~~~
 # to do:
 # - stat data ...  GLTHV

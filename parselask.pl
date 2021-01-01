@@ -40,13 +40,16 @@ exit;
 # returns (flag, length, \(data) )
 sub checkstring {
   my $resp = shift @_;
-  # my $coresubstr ($response , 0,-3  );
   # ^D0251496161801100008000000
   # \^(D)(\d{3})(.*)(\d{2})$
   ( my ($label, $len, $payload, $crc) = 
 	  ($resp =~ /\^(D)(\d{3})(.*)(\d{2})/) )  
 	  or return (0) ;
+
+  # compare real length with announced length
+  return (0) if ( length($resp)-5-$len ) ;
+  
   my @data = split(',', $payload);
-  return ($label, $len, \@data , $crc);
+  return ($label, $len,  \@data , $crc);
 
 }

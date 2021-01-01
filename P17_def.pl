@@ -277,7 +277,7 @@ $p17{'BATS'} = {
 		'Battery floating charge voltage',
 		'Battery stop charger current level in floating charging',
 		'Keep charged time of battery catch stopped charging current level',
-		'Battery voltage of recover to charge when battery stop chafloating charging',
+		'Battery voltage of recover to chg when batt stop chg in floating chg',
 		'Battery under voltage',
 		'Battery under back voltage',
 		'Battery weak voltage in hybrid mode',

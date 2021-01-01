@@ -68,7 +68,7 @@ foreach my $querytag ( @keys ) {
       # $factor = 1 unless (defined ($factor))
       $value *= $factor if defined ($factor);
 
-      printf ( "\t%s %s (%s)\n",  $value, $unit,  $label );
+      printf ( "\t%s %s \t (%s)\n",  $value, $unit,  $label );
   }
   # print Dumper(@$flptr);
   # foreach my $field ( @$flptr ) {

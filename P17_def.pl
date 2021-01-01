@@ -269,6 +269,28 @@ $p17{'SV'} = {
         factors=>[ ( 0.1 ) x2 ],
 };
 
+$p17{'BATS'} = {
+	tag=>'battery setting', 
+	use=>{ conf2=>5 , em=>8 } ,
+	fields=>[ 'Battery maximum charge current',
+		'Battery constant charge voltage(C.V.)',
+		'Battery floating charge voltage',
+		'Battery stop charger current level in floating charging',
+		'Keep charged time of battery catch stopped charging current level',
+		'Battery voltage of recover to charge when battery stop chafloating charging',
+		'Battery under voltage',
+		'Battery under back voltage',
+		'Battery weak voltage in hybrid mode',
+		'Battery weak back voltage in hybrid mode',
+		'Battery type',		'', '', 
+		'AC charger keep battery voltage function enable/diable',
+		'AC charger keep battery voltage' ,
+		'Battery temperature sensor compensation',
+		'Max. AC charging current',
+		'Battery discharge max current in hybrid mode' ] ,
+	units=>[ qw ( A V V A min ), ('V') x5,  ( '' ) x4, qw ( V mV A A ) ] , 
+	factors=>[ ( 0.1) x 4, (1),  ( 0.1) x5, (undef)x4,  ( 0.1) x3, 1 ], 
+};
 
 
 

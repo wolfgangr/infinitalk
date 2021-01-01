@@ -15,11 +15,13 @@ require ('./P17_def.pl');
 
 # my @keys = (keys %p17) ;
 
-my @keys = (
+my @fookeys = (
 	sort { $p17{$a}->{'use'}->{'conf0'} <=> $p17{$b}->{'use'}->{'conf0'} } 
 	# map {  defined ( $p17{$_}->{'use'}->{'conf0'} ) ? ($_) : () }
 	grep {  defined ( $p17{$_}->{'use'}->{'conf0'} ) }
 	keys %p17) ;
+
+my @keys = sortedkeys (\%p17, 'stat') ;
 
 foreach my $querytag ( @keys ) {
   my $query = $p17{$querytag};
@@ -47,5 +49,16 @@ foreach my $querytag ( @keys ) {
   # die "#### DEBUG ####";
 }
 
-
+exit;
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# sortedkeys ($p17, 'tag' ) 
+sub sortedkeys {
+  my ($p, $tag) = @_;
+  # my %p = 
+  return ( 
+  	sort { $$p{$a}->{'use'}->{ $tag } <=> $$p{$b}->{'use'}->{ $tag } }
+        grep {  defined ( $$p{$_}->{'use'}->{ $tag } ) }
+        keys %$p ) ;
+}
 

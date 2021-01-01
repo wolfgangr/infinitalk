@@ -60,6 +60,23 @@ $p17{'MD'} = {
 	factors=>[ undef, 1,1,1,1, 0.1, 0.1 , 1, 0.1  ] ,
 } ;
 
+$p17{'PIRI'} = {
+        tag=>'rated information',
+        use=>{ conf0=>5 },
+        fields=>[ 
+	'AC input rated voltage', 'AC input rated frequency', 'AC input rated current', 
+	'AC output rated voltage', 'AC output rated current', 
+	'MPPT rated current per string', 'Battery rated voltage', 
+	'MPPT track number', 
+	'Machine type', 'Topology', 
+	'Enable/Disable parallel for output', 
+	'Enable/Disable for real-time control'	],
+	units=>[ qw ( V Hz A V A A V) ], 
+	factors=>[ (0.1) x 7, 1  ], 
+
+} ;
+
+
 $p17{'GS'} = {
         tag=>'General status',
 	use=>{ stat=>1 },
@@ -110,6 +127,8 @@ $p17{'T'} = {
 	use=>{ stat=>-1, conf0=>-1 },
         fields=>['timestring' ]
 } ;
+
+
 
 
 ## -----------------------

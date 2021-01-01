@@ -14,7 +14,7 @@ set serial line parameters
   
     parselread.pl  
 simple replacement for the infamous `cat < /dev/foo`  
-transfers the `<CR>`to `<LF>` and cuts the non printale CRC  
+transfers the `<CR>`to `<LF>` and cuts the non printable CRC  
 still handy for basic line setup debugging  
   
     parselwrite.pl  

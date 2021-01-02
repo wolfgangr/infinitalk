@@ -14,6 +14,14 @@
 # (todo) - units=>[ ... ] optional list of physical units, 
 # (todo) - factors=>[ .... ] optional list of scaling factors 
 # - use=>{ group=>seq } assignment of field to logical ordering, may be repeated
+
+# output use collations:
+# conf0 ... conf4 - grouped config info similiar to SolarPower pages
+# stat - current status
+# em - energy management relevant stuff
+# es - short version thereof
+
+
 #
 # include as follows:
 #  our %p17;
@@ -106,7 +114,7 @@ $p17{'MAR'} = {
 
 $p17{'GS'} = {
         tag=>'General status',
-	use=>{ stat=>1 },
+	use=>{ stat=>1 , es=>2 },
         fields=>[
 	'Solar input voltage Solar1', 'Solar input voltage Solar2', 
 	'Solar input current Solar1', 'Solar input current Solar2', 
@@ -151,7 +159,7 @@ $p17{'MOD'} = {
 
 $p17{'T'} = {
         tag=>'inverter time',
-	use=>{ stat=>-1, conf0=>-1 },
+	use=>{ stat=>-1, conf0=>-1 , es=>-1 },
         fields=>['timestring' ]
 } ;
 
@@ -192,7 +200,7 @@ $p17{'GLTHV'} = {
 
 $p17{'EMINFO'} = {
 	tag=>'Energy Management info'  ,
-	use=>{ stat=>7, em=>1 },
+	use=>{ stat=>7, em=>1, es=>3, },
 	fields=>[ '', 'default Feed-In power', 'actual PV-Power', 
 		'actual Feed-In power', 'actual reserved Hybrid power', '' ] ,
 	units=>[ '', ('W') x 4 , '' ],
@@ -204,7 +212,7 @@ $p17{'EMINFO'} = {
 
 $p17{'HECS'} = {
 	tag=>'Energy control status',
-	use=>{ conf1=>1, em=>2 },
+	use=>{ conf1=>1, em=>2, es=>2 },
 	fields=>['Solar energy distribution of priority', 
 		'enbl charge battery', 
 		'enbl AC charge battery', 

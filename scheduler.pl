@@ -144,12 +144,13 @@ sub stat_iterator {
   my $resp = [ call_infini_cooked ( $tag ) ] ;
   $res{$tag}=$resp ;
 
-  debug_dumper ( 5, \%res ) ;
+  debug_dumper ( 6, \%res ) ;
 
 
   # return 0 if ( $s_counter++ >= 4) ;
   # $s_counter++ >= 4 and $s_counter=0;
   if ( $s_counter++ >= $#rrd_cmd_list) {
+    debug_dumper ( 5, \%res ) ;
     die "#### debug in  # stat_iterator ####";
   }
 

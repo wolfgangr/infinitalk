@@ -150,7 +150,7 @@ sub stat_iterator {
   # return 0 if ( $s_counter++ >= 4) ;
   # $s_counter++ >= 4 and $s_counter=0;
   if ( $s_counter++ >= $#rrd_cmd_list) {
-    debug_dumper ( 5, \%res ) ;
+    debug_dumper ( 5, \%res , \@rrd_def) ;
     die "#### debug in  # stat_iterator ####";
   }
 
@@ -258,5 +258,5 @@ sub debug_printf {
 
 sub debug_dumper {
   my $level = shift @_;
-  print STDERR (Data::Dumper->Dump( \@_ ));
+  print STDERR (Data::Dumper->Dump( \@_ )) if ( $level <= $Debug) ;
 }

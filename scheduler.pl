@@ -128,19 +128,31 @@ exit;
 # collection struct:
 sub stat_iterator {
   # my $s_counter ;
-  my $time ;
+  # state $time ;
   state  $s_counter = 0;
+  state %res=();
   debug_print (5, "stat_iterator $s_counter\n");
 
-  unless ( $s_counter) {  $time = [ call_infini_cooked ('T') ] ;  }
-   
-  my $current = [ call_infini_cooked ( $rrd_cmd_list[$s_counter] ) ] ;
+  unless ( $s_counter) {  
+    my $time = [ call_infini_cooked ('T') ] ;  
+    # %res = { T=>$time } ;
+    %res=();
+    $res{'T'}=$time;
+  }
+  
+  my $tag =$rrd_cmd_list[$s_counter]; 
+  my $resp = [ call_infini_cooked ( $tag ) ] ;
+  $res{$tag}=$resp ;
 
-  debug_dumper ( 5, $time, $current ) ;
+  debug_dumper ( 5, \%res ) ;
 
 
   # return 0 if ( $s_counter++ >= 4) ;
-  $s_counter++ >= 4 and $s_counter=0;
+  # $s_counter++ >= 4 and $s_counter=0;
+  if ( $s_counter++ >= $#rrd_cmd_list) {
+    die "#### debug in  # stat_iterator ####";
+  }
+
   return 1;
 }
 

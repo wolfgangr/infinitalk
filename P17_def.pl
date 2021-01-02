@@ -328,7 +328,42 @@ $p17{'BATS'} = {
 	factors=>[ ( 0.1) x 4, (1),  ( 0.1) x5, (undef)x4,  ( 0.1) x3, 1 ], 
 };
 
+# End of p17 protocol
+#-------------
+# rrd file definition
+# array of  label=>[ P17cmd, P17pos, min, max ]
 
+@rrd_def= (
+  [ U_batt,  GS   , 5, 0, 70 ],
+  [ C_batt,  GS   , 6, 0, 120 ],  # percentage
+  [ I_batt,  GS   , 7, -300, 300 ],
+
+  [ U_ACinR, GS   , 8, 0, 300 ],
+  [ U_ACinS, GS   , 9, 0, 300 ],
+  [ U_ACinT, GS   , 10, 0, 300 ],
+  [ U_ACoutR, GS  , 15, 0, 300 ],
+  [ U_ACoutS, GS  , 16, 0, 300 ],
+  [ U_ACoutT, GS  , 17, 0, 300 ],
+  [ U_ACmax, GLTHV, 1, 0, 300 ],
+
+  [ F_ACin, GS    , 11, 0, 60 ],
+  [ F_ACout, GS   , 18, 0, 60 ],
+
+  [ P_ACoutR,    PS, 8, 0, 5000 ],
+  [ P_ACoutS,    PS, 9, 0, 5000 ],
+  [ P_ACoutT,    PS, 10, 0, 5000 ],
+  [ P_ACoutSum,  PS, 11, 0, 15000 ],
+  [ P_ACoutPerc, PS, 12, 0, 110 ],
+
+  [ P_EM_feed_def  , EMINFO , 2, 0, 15000 ],
+  [ P_EM_PV_act    , EMINFO , 3, 0, 15000 ],
+  [ P_EM_feed_act  , EMINFO , 4, 0, 15000 ],
+  [ P_EM_hybrid_res, EMINFO , 5, 0, 15000 ],
+
+  [ T_inner, GS, 22, -20, 100 ],
+  [ T_comp,  GS, 23, -20, 100 ],
+
+);
 
 
 ###~~~~~~~~~~~~~~

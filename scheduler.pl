@@ -43,8 +43,12 @@ our %rrd_def_by_cmd;
 
 foreach my $dl (@rrd_def) {
 	# I hope we have a pointer to a list....
-	$rrd_def_by_label{ $$dl[0] } = $dl ;
-	$rrd_def_by_cmd{ $$dl[1] } = [] ;
+	$rrd_def_by_label{ $$dl[0] } = $dl ; # this one works in a single run
+	$rrd_def_by_cmd{ $$dl[1] } = [] ;    # collect list of P17 commands in use
+}
+
+foreach  my $dl (@rrd_def) {
+	$rrd_def_by_cmd{ $$dl[1] }[ $$dl[2] -1  ] = $dl ;
 }
 
 debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd);

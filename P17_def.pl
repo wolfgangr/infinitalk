@@ -60,6 +60,13 @@ $p17{'MD'} = {
 	factors=>[ undef, 1,1,1,1, 0.1, 0.1 , 1, 0.1  ] ,
 } ;
 
+$p17{'DM'} = {
+	tag=>'machine model', 
+	use=>{ conf0=>4.5 },
+	fields=>[ 'code' ],
+};
+
+
 $p17{'PIRI'} = {
         tag=>'rated information',
         use=>{ conf0=>5 },
@@ -76,6 +83,26 @@ $p17{'PIRI'} = {
 
 } ;
 
+$p17{'MAR'} = {
+	tag=>'machine adjustable range', 
+	use=>{ conf0=>6 },
+	fields=>[
+'upper limit of AC input highest voltage for feed power', 'lower limit of AC input highest voltage for feed power',
+'upper limit of AC input lowest voltage for feed power', 'lower limit of AC input lowest voltage for feed power',
+'upper limit of AC input highest frequency for feed power', 'lower limit of AC input highest frequency for feed power',
+'upper limit of AC input lowest frequency for feed power', 'lower limit of AC input lowest frequency for feed power',
+'upper limit of wait time for feed power', 'lower limit of wait time for feed power',
+'upper limit of solar maximum input voltage', 'lower limit of solar maximum input voltage',
+'upper limit of solar minimum input voltage', 'lower limit of solar minimum input voltage',
+'upper limit of solar maximum MPPT voltage', 'lower limit of solar maximum MPPT voltage',
+'upper limit of solar minimum MPPT voltage', 'lower limit of solar minimum MPPT voltage',
+'upper limit of battery charged voltage', 'lower limit of battery charged voltage',
+'upper limit of battery Max. charged current', 'lower limit of battery Max. charged current',
+'upper limit of maximum feeding power', 'lower limit of maximum feeding power',
+		], 
+	units=>[   ('V') x4, ('Hz') x4, ('s') x2, ('V') x10, qw( A A W W ) ], 
+	factors=>[ (0.1) x4, (0.01) x4, (1) x 2,  (0.1) x12,         1,1 ], 
+};
 
 $p17{'GS'} = {
         tag=>'General status',

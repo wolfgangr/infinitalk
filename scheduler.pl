@@ -8,9 +8,11 @@
 # - extract static information for web display and such stuff
 #
 #
-use Data::Dumper ;
 use strict;
 use warnings;
+use 5.010;
+
+use Data::Dumper ;
 use Digest::CRC qw(crc) ;
 # use Time::HiRes ;
 # use IO::Socket::UNIX;
@@ -51,9 +53,9 @@ foreach  my $dl (@rrd_def) {
 	$rrd_def_by_cmd{ $$dl[1] }[ $$dl[2] -1  ] = $dl ;
 }
 
-debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd);
+our @rrd_cmd_list = sort keys %rrd_def_by_cmd;
 
-die "############### DEBUG #############";
+debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd, \@rrd_cmd_list );
 
 
 # ---- prepare file handlers ------
@@ -64,6 +66,7 @@ POSIX::mkfifo("$infini_cmd_read_pipe", 0666) or die "canot create fifo $infini_c
 debug_print (5, "fifos created ...\n");
 
 our $INFINI = POSIX::open( $infini_device ) or die "canot open $infini_device : $!";
+debug_print (5,  "connected to infini\n");
 
 our $SEND_PIPE = POSIX::open($infini_cmd_send_pipe,  
 	&POSIX::O_RDONLY | &POSIX::O_NONBLOCK ) 
@@ -77,14 +80,73 @@ our $READ_PIPE = POSIX::open($infini_cmd_read_pipe,
 	or die "cannot open socket $infini_cmd_read_pipe : $!";
 debug_print (5,  "read pipe open\n");
 
+# ========= main scheduler loop =============
 
-# die "############### DEBUG #############";
+# setup rrd iterator, start with T
+
+while (1) {
+  # while (command in pipeline)
+  #   process command
+  # }
+  
+  # read time if status iterator is at start
+  # read next status cmd
+  # if last status cmd { reset iterator - write rrd }
+
+  unless (stat_iterator() ) {
+	debug_print (1, "shitt happened processing stat_iterator\n");
+	last; 
+  }
+  
+  unless (coll_iterator() ) {
+        debug_print (1, "shitt happened processing coll_iterator\n");
+        last;
+  }
+
+  
+  
+  
+  
+  # last if (happens(shit));
+
+
+
+
+  # die "############### DEBUG #############";
+}
+
+SHITTHAPPENED:
+debug_print (1, "shitt happened, main loop cancelled \n");
 
 POSIX::close $SEND_PIPE; 
 POSIX::close $READ_PIPE;
 POSIX::close $INFINI;
 
+debug_print (1, "cleanup done \n");
+
 exit;
+
+#~~~ iterator ~~~~~~~~~~~~~
+
+sub stat_iterator {
+  my $s_counter ;
+  state  $s_counter = 0;
+  debug_print (5, "stat_iterator $s_counter\n");
+  # return 0 if ( $s_counter++ >= 4) ;
+  $s_counter++ >= 4 and $s_counter=0;
+  return 1;
+}
+
+sub coll_iterator {
+  my $c_counter ;
+  state $c_counter = 0;
+  debug_print (5, "coll_iterator $c_counter\n");
+  return 0 if ( $c_counter++ >= 10) ;
+
+  return 1;
+}
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # subs....
 

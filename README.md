@@ -49,6 +49,12 @@ Handy for comparison with printed P17 sommand spec
   
     debug_wetrun.pl  
 now does a real connect and data retrieval to the inverter  
+mapped with labels, scaling and unit, as far as provided in `P17_def.pl`  
 nice to compare real data with field labels, to check for correct association  
+have even misused it as pre-alpha console supplement for SolarPower config visualisation  
+
+------
+
+last update: 2021-01-01 - v0.03
 
 

@@ -89,10 +89,6 @@ while (1) {
   #   process command
   # }
   
-  # read time if status iterator is at start
-  # read next status cmd
-  # if last status cmd { reset iterator - write rrd }
-
   unless (stat_iterator() ) {
 	debug_print (1, "shitt happened processing stat_iterator\n");
 	last; 
@@ -102,18 +98,12 @@ while (1) {
         debug_print (1, "shitt happened processing coll_iterator\n");
         last;
   }
-
-  
-  
-  
-  
+ 
   # last if (happens(shit));
-
-
-
-
   # die "############### DEBUG #############";
-}
+} # ===== end of main scheduler loop
+
+
 
 SHITTHAPPENED:
 debug_print (1, "shitt happened, main loop cancelled \n");
@@ -127,16 +117,28 @@ debug_print (1, "cleanup done \n");
 exit;
 
 #~~~ iterator ~~~~~~~~~~~~~
-
+# tag list @rrd_cmd_list
+# collection struct:
 sub stat_iterator {
   my $s_counter ;
+  my $time ;
   state  $s_counter = 0;
   debug_print (5, "stat_iterator $s_counter\n");
+
+  unless ( $s_counter) {  $time = [ call_infini_cooked ('T') ] ;  }
+   
+  my $current = [ call_infini_cooked ( $rrd_cmd_list[$s_counter] ) ] ;
+
+  debug_dumper ( 5, $time, $current ) ;
+
+
   # return 0 if ( $s_counter++ >= 4) ;
   $s_counter++ >= 4 and $s_counter=0;
   return 1;
 }
 
+# collation list : @collations
+# collection struct
 sub coll_iterator {
   my $c_counter ;
   state $c_counter = 0;

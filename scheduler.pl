@@ -16,6 +16,10 @@ use Digest::CRC qw(crc) ;
 # use IO::Socket::UNIX;
 use POSIX qw( );
 
+#-----------------
+
+our $Debug = 5;
+
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
 our $infini_cmd_send_pipe = "$tempdir/cmd_send.fifo";
@@ -32,21 +36,21 @@ require ('./P17_def.pl');
 unlink ( $infini_cmd_send_pipe, $infini_cmd_read_pipe);
 POSIX::mkfifo("$infini_cmd_send_pipe", 0666) or die "canot create fifo $infini_cmd_send_pipe : $!";
 POSIX::mkfifo("$infini_cmd_read_pipe", 0666) or die "canot create fifo $infini_cmd_read_pipe : $!";
-# print "fifos created ...\n";
+debug_print (5, "fifos created ...\n");
 
 our $INFINI = POSIX::open( $infini_device ) or die "canot open $infini_device : $!";
 
 our $SEND_PIPE = POSIX::open($infini_cmd_send_pipe,  
 	&POSIX::O_RDONLY | &POSIX::O_NONBLOCK ) 
 	or die "cannot open socket $infini_cmd_send_pipe : $!";
-# print "send pipe open\n";
+debug_print (5,  "send pipe open\n") ;
 
 # open(our $READ_PIPE, '>>', $infini_cmd_read_pipe ) or die "cannot open socket $infini_cmd_send_pipe: $!";
 
 our $READ_PIPE = POSIX::open($infini_cmd_read_pipe,  
 	&POSIX::O_NONBLOCK  ) 
 	or die "cannot open socket $infini_cmd_read_pipe : $!";
-# print "read pipe open\n";
+debug_print (5,  "read pipe open\n");
 
 
 # die "############### DEBUG #############";
@@ -100,4 +104,16 @@ sub checkstring {
 
   my @data = split(',', $payload);
   return ($label, $len,  \@data  );
+}
+
+
+# debug_print($level, $content)
+sub debug_print {
+  my $level = shift @_;
+  print STDERR @_ if ( $level <= $Debug) ;
+}
+
+sub debug_printf {
+  my $level = shift @_;
+  printf STDERR  @_ if ( $level <= $Debug) ;
 }

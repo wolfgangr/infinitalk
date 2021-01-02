@@ -16,7 +16,7 @@ use Digest::CRC qw(crc) ;
 # use IO::Socket::UNIX;
 use POSIX qw( );
 
-#-----------------
+#---- config -------------
 
 our $Debug = 5;
 
@@ -28,10 +28,31 @@ our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
 our @collations = qw (conf0 conf1 conf2 conf3  stat em);
 
 
+# ------ protocol definition ----- 
 
 our %p17;
 our @rrd_def;
 require ('./P17_def.pl');
+
+# I want
+# - hashed index of  @rrd_def by rrd label
+# - hashed index of  @rrd_def by P17 command, pointing to array of pointers
+
+our %rrd_def_by_label;
+our %rrd_def_by_cmd;
+
+foreach my $dl (@rrd_def) {
+	# I hope we have a pointer to a list....
+	$rrd_def_by_label{ $$dl[0] } = $dl ;
+	$rrd_def_by_cmd{ $$dl[1] } = [] ;
+}
+
+debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd);
+
+die "############### DEBUG #############";
+
+
+# ---- prepare file handlers ------
 
 unlink ( $infini_cmd_send_pipe, $infini_cmd_read_pipe);
 POSIX::mkfifo("$infini_cmd_send_pipe", 0666) or die "canot create fifo $infini_cmd_send_pipe : $!";
@@ -116,4 +137,9 @@ sub debug_print {
 sub debug_printf {
   my $level = shift @_;
   printf STDERR  @_ if ( $level <= $Debug) ;
+}
+
+sub debug_dumper {
+  my $level = shift @_;
+  print STDERR (Data::Dumper->Dump( \@_ ));
 }

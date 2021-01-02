@@ -215,6 +215,7 @@ $p17{'HECS'} = {
 		'enbl bat dischg to utility when solar input loss',
 		'enbl Q(U) derating funcation'
 	], 
+	units=>[ '', qw ( A B C D E F G H ) ],
 };
 
 

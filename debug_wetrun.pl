@@ -39,14 +39,14 @@ foreach my $querytag ( @keys ) {
   # print Dumper($usage);
   # printf "usage %s %d | %s %d" , (@$usage) ;
 
-  print "\t\tusage:  ";
+  ### print "\t\tusage:  ";
   while ( my ($k, $v) = each %$usage ) {
-    print "\t $k $v  ";
+	  ### print "\t $k $v  ";
   } 
   print "\n";
 
   my $qrys = sprintf  ("^P%03d%s",  (length ($querytag) +1), $querytag) ;
-  printf "\tquery:    %s\n", $qrys ;
+  printf "\tquery:    %s", $qrys ;
 
   # really connect
   printf $INFINI  "%s\r", $qrys;
@@ -55,8 +55,8 @@ foreach my $querytag ( @keys ) {
   # print Dumper ( checkstring ($response ));
 
   my ($flag, $len, $valptr) = checkstring ($response );
-
-  printf ("\tflag: %s , len: %s , vars: %s \n", $flag, $len, $#$valptr) ;
+  ###printf ("\tflag: %s , len: %s , vars: %s \n", $flag, $len, $#$valptr) ;
+  
   for my $l (0 .. $#$valptr) {
       my $value = $$valptr[$l] ;  
       my $label = $$flptr[$l] ;

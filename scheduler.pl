@@ -65,8 +65,15 @@ POSIX::mkfifo("$infini_cmd_send_pipe", 0666) or die "canot create fifo $infini_c
 POSIX::mkfifo("$infini_cmd_read_pipe", 0666) or die "canot create fifo $infini_cmd_read_pipe : $!";
 debug_print (5, "fifos created ...\n");
 
-our $INFINI = POSIX::open( $infini_device ) or die "canot open $infini_device : $!";
-debug_print (5,  "connected to infini\n");
+# our $INFINI;
+# our $INF_INV ;
+# $INF_INV =  POSIX::open( $infini_device )   or die "canot open $infini_device : $!";
+# debug_print (5,  "connected to infini\n");
+# debug_dumper (5, $INF_INV );
+# die "### debug #####";
+
+open ( my $INFINI,  "+<", $infini_device ) or die "canot open $infini_device : $!";
+$/ = "\r" ; # change line terminator
 
 our $SEND_PIPE = POSIX::open($infini_cmd_send_pipe,  
 	&POSIX::O_RDONLY | &POSIX::O_NONBLOCK ) 
@@ -120,7 +127,7 @@ exit;
 # tag list @rrd_cmd_list
 # collection struct:
 sub stat_iterator {
-  my $s_counter ;
+  # my $s_counter ;
   my $time ;
   state  $s_counter = 0;
   debug_print (5, "stat_iterator $s_counter\n");
@@ -140,7 +147,7 @@ sub stat_iterator {
 # collation list : @collations
 # collection struct
 sub coll_iterator {
-  my $c_counter ;
+  # my $c_counter ;
   state $c_counter = 0;
   debug_print (5, "coll_iterator $c_counter\n");
   return 0 if ( $c_counter++ >= 10) ;
@@ -152,17 +159,46 @@ sub coll_iterator {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # subs....
 
+# my_POSIX_print ($filedsc, $string )
+sub my_POSIX_print {
+  my ($FD, $str ) =  @_; 
+  my $rv =  POSIX::write( $FD, $str, length($str) );
+  die "error writing to $FD : $!" unless defined ($rv);
+  return $rv;
+}
+
+sub my_POSIX_printf {
+  my $FD = shift @_;
+  return my_POSIX_print ( $FD, sprintf (@_));
+}
+
+# my_POSIX_readline ($FH);
+sub my_POSIX_readall {
+  my $FD = shift @_;
+  my ($rv, $chunk);
+  while ( POSIX::read( $FD, $chunk, 15 )) { $rv .= $chunk ; }
+  return $rv ; 
+}
+
 # $response = call_infini_raw ($request)
 sub call_infini_raw {
   my $qrys = shift @_;
-  printf $INFINI  "%s\r", $qrys;
+  printf $INFINI ( "%s\r", $qrys) ;
+  # my_POSIX_printf ($INFINI, "%s\r", $qrys) ;
+  # my ($rv, $buf);
+  # POSIX::write( $INFINI, $qrys, len($qrys) );
+  # while ( POSIX::read
   my $rv=<$INFINI>;
+  # my $rv=my_POSIX_readall($INFINI);
   return $rv;
 }
 
 # ($flag, $len, $valptr) = call_infini_cooked ( $content, [$command] )
 sub call_infini_cooked {
   my $qry = compose_qry (@_);
+
+  debug_printf (5, "content %s - query %s \n", $_[0] , $qry ); 
+
   my $rsp = call_infini_raw($qry);
   return (checkstring( $rsp ));
 }

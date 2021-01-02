@@ -17,6 +17,7 @@ use Digest::CRC qw(crc) ;
 # use Time::HiRes ;
 # use IO::Socket::UNIX;
 use POSIX qw( );
+use RRDs;
 
 #---- config -------------
 
@@ -29,6 +30,9 @@ our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
 
 our @collations = qw (conf0 conf1 conf2 conf3  stat em);
 
+our $rrddir= '.';
+our $infini_rrd = "$rrddir/infini.rrd";
+our $status_rrd = "$rrddir/status.rrd";
 
 # ------ protocol definition ----- 
 

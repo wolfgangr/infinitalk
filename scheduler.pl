@@ -21,7 +21,7 @@ use RRDs;
 
 #---- config -------------
 
-our $Debug = 4;
+our $Debug = 55555;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -29,6 +29,7 @@ our $infini_cmd_send_pipe = "$tempdir/cmd_send.fifo";
 our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
 
 our @collations = qw (conf0 conf1 conf2 conf3  stat em);
+our @extra_stats = qw (T MOD WS); # commands to retrieved for status not included in @rrd_def 
 
 our $rrddir= '.';
 our $infini_rrd = "$rrddir/infini.rrd";
@@ -62,7 +63,8 @@ foreach  my $dl (@rrd_def) {
 	$rrd_def_by_cmd{ $$dl[1] }[ $$dl[2] -1  ] = $dl ;
 }
 
-our @rrd_cmd_list = sort keys %rrd_def_by_cmd;
+# our @rrd_cmd_list = @extra_stats , sort keys %rrd_def_by_cmd;
+our @rrd_cmd_list =  sort keys %rrd_def_by_cmd;
 
 our $rrd_stat_tpl = join(':', map { $$_[0] } @rrd_def) ;
 
@@ -179,7 +181,7 @@ sub stat_iterator {
     RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
     debug_rrd (3,5, RRDs::error );
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # die "#### debug in  # stat_iterator ####";
+    die "#### debug in  # stat_iterator ####";
   } 
 
   return 1;

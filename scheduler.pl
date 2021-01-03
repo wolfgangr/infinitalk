@@ -81,7 +81,18 @@ our $rrd_stat_tpl = join(':', map { $$_[0] } @rrd_def) ;
 debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd, \@rrd_cmd_list, \@rrd_def , \%rrd_factor_map );
 debug_print (5, "rrd_stat_tpl = \n\t$rrd_stat_tpl \n");
 
-# die "### debug ---- setup-----  #####";
+#---------------
+ 
+# index for processing of collations:
+# hash of arrays
+our %collation_cmds =() ;
+foreach my $cl (@collations) {
+  $collation_cmds{$cl} = [ sortedkeys  (\%p17, $cl) ] ;
+}
+
+debug_dumper(5, \@collations, \%collation_cmds) ;
+
+die "### debug ---- setup-----  #####";
 
 # ---- prepare file handlers ------
 
@@ -179,7 +190,7 @@ sub stat_iterator {
 
 
 
-    debug_dumper ( 5, \%res , \@rrd_def) ;
+    debug_dumper ( 6, \%res , \@rrd_def) ;
     # keep a structured copy for reuse
     #
     lock_store \%res, $status_bck; 
@@ -217,7 +228,7 @@ sub stat_iterator {
     # power status: last 6 fields of PS and field 1, 5 of EMINFO in littleendian
     my @ps_ary = ( @{$res{'PS'}[2]}[-6 .. -1], @{$res{'EMINFO'}[2]}[0,5] ); 
 
-    debug_dumper ( 5,  $res{'PS'}[2],  $res{'EMINFO'}[2] , \@ps_ary );
+    debug_dumper ( 6,  $res{'PS'}[2],  $res{'EMINFO'}[2] , \@ps_ary );
 
     # pack array values into integer by 2 bits each
     my $ps_2bits = 0;
@@ -229,7 +240,7 @@ sub stat_iterator {
     # work mode: int 0 ... 6
     my $wm = $res{'MOD'}[2][0] ;
     # N inv_min work_mode , pow_status  warn_status 
-    debug_printf (5, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
+    debug_printf (6, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
 	    $i_rrdt  , $ps_2bits, $ws_bits , $wm ); 
 
     my $valstr2 = join(':', ('N', $i_rrdt  , $ps_2bits, $ws_bits , $wm ));
@@ -239,7 +250,7 @@ sub stat_iterator {
 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    die "#### debug in  # stat_iterator ####";
+    # die "#### debug in  # stat_iterator ####";
   } 
 
   return 1;
@@ -248,10 +259,20 @@ sub stat_iterator {
 # collation list : @collations
 # collection struct
 sub coll_iterator {
-  # my $c_counter ;
-  state $c_counter = 0;
-  debug_print (5, "coll_iterator $c_counter\n");
-  return 0 if ( $c_counter++ >= 30) ;
+  # wir iterieren über collations und commands, die Werte pro command gehen dann in einem aufwasch
+  # 	@collations ... liste der 
+  # template: https://github.com/wolfgangr/infinitalk/blob/master/debug_wetrun.pl
+  #
+  state $cl_counter = 0;
+  state $cv_counter = 0;
+  debug_print (5, "coll_iterator $cl_counter\n");
+
+  
+
+
+
+
+  return 0 if ( $cl_counter++ >= 30) ;
 
   return 1;
 }
@@ -341,6 +362,15 @@ sub bitmapize {
 
   } # while ($#@_ >= 0);
   return $rv;
+}
+
+# sortedkeys ($p17, 'tag' ) 
+sub sortedkeys {
+  my ($p, $tag) = @_;
+  return ( 
+  	sort { $$p{$a}->{'use'}->{ $tag } <=> $$p{$b}->{'use'}->{ $tag } }
+        grep {  defined ( $$p{$_}->{'use'}->{ $tag } ) }
+        keys %$p ) ;
 }
 
 # debug_print($level, $content)

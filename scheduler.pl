@@ -92,7 +92,7 @@ foreach my $cl (@collations) {
 
 debug_dumper(5, \@collations, \%collation_cmds) ;
 
-die "### debug ---- setup-----  #####";
+# die "### debug ---- setup-----  #####";
 
 # ---- prepare file handlers ------
 
@@ -260,17 +260,35 @@ sub stat_iterator {
 # collection struct
 sub coll_iterator {
   # wir iterieren über collations und commands, die Werte pro command gehen dann in einem aufwasch
-  # 	@collations ... liste der 
+  # 	@collations ... liste der   tags für   \%collation_cmds) 
   # template: https://github.com/wolfgangr/infinitalk/blob/master/debug_wetrun.pl
   #
   state $cl_counter = 0;
-  state $cv_counter = 0;
-  debug_print (5, "coll_iterator $cl_counter\n");
+  state $cmd_counter = 0;
+  state %res = ();
 
-  
+  debug_printf (5, "coll_iterator %d : %d \t", $cl_counter, $cmd_counter);
+
+  # get orientation
+  my $current_cl_tag = $collations[$cl_counter] ;
+  my @current_cmd_list = @{$collation_cmds{ $current_cl_tag }};
+  # my $current_cmd_tag = $collation_cmds{ $current_cl_tag }[$cmd_counter] ;
+  my $current_cmd_tag = $current_cmd_list[$cmd_counter] ;
 
 
+  debug_printf (5, " processing collation =%s, command=%s\n", $current_cl_tag, $current_cmd_tag );
 
+  my $resp = [ call_infini_cooked ( $current_cmd_tag ) ] ;
+  $res{ $current_cmd_tag }=$resp ;
+
+  if ( $cmd_counter++ >= $#current_cmd_list ) {
+    # last command of collation is done
+    debug_dumper ( 5, \%res ) ;
+
+
+  die " ========== DEBUG in coll_iterator ====== ";
+    # next collation, may be o a rolling basis
+  }
 
   return 0 if ( $cl_counter++ >= 30) ;
 

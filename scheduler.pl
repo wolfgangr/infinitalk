@@ -168,7 +168,7 @@ sub stat_iterator {
     debug_print (5, "template: $rrd_stat_tpl \n");
     my @vals = map { 
     	my ($label, $cmd, $idx) = @$_ ;
-	$res{$cmd}[2][$idx-1];
+	$res{$cmd}[2][$idx-1] * $rrd_factor_map[$label];
     } @rrd_def ;
 
     debug_dumper ( 6, \@vals );

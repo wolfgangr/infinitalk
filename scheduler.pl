@@ -12,12 +12,17 @@ use strict;
 use warnings;
 use 5.010;
 
-use Data::Dumper ;
+use Data::Dumper qw(Dumper) ;
 use Digest::CRC qw(crc) ;
+# use DateTime();
+use DateTime::Format::Strptime();
+our $my_infini_strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
+
+
 # use Time::HiRes ;
 # use IO::Socket::UNIX;
 use POSIX qw( );
-use RRDs;
+use RRDs();
 use Storable qw( lock_store );
 
 #---- config -------------
@@ -193,9 +198,15 @@ sub stat_iterator {
     debug_rrd (3,5, RRDs::error );
 
     my $i_time = $res{'T'}[2][0] ;
-    my @i_tm = ( $i_time =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2}).*$/ ) ;
-    my $s_time = POSIX::strftime("%+", @i_tm[0 .. 4] ,0, -1,-1,-1  ) ;
-    debug_dumper( 5,  $i_time, \@i_tm,  $s_time);
+    # my @i_tm = ( $i_time =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2}).*$/ ) ;
+    # my $s_time = POSIX::strftime("%s", @i_tm[0 .. 4] ,0, -1,-1,-1  ) ;
+    # debug_dumper( 5,  $i_time, \@i_tm,  $s_time / 86400);
+
+    # my $strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
+    my $dt = $my_infini_strp->parse_datetime( $i_time );
+    my $footime = $dt->strftime('%s') ;
+
+    debug_dumper( 5,  $footime, $footime/86400 );
 
     # date
     # flags

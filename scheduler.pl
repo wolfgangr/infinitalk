@@ -175,6 +175,8 @@ sub stat_iterator {
 
 
     debug_dumper ( 5, \%res , \@rrd_def) ;
+    # keep a structured copy for reuse
+    #
     lock_store \%res, $status_bck; 
 
     debug_print (5, "template: $rrd_stat_tpl \n");
@@ -189,6 +191,17 @@ sub stat_iterator {
     debug_print (4, "values: $valstr  \n");
     RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
     debug_rrd (3,5, RRDs::error );
+
+    my $i_time = $res{'T'}[2][0] ;
+    my @i_tm = ( $i_time =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2}).*$/ ) ;
+    my $s_time = POSIX::strftime("%+", @i_tm[0 .. 4] ,0, -1,-1,-1  ) ;
+    debug_dumper( 5,  $i_time, \@i_tm,  $s_time);
+
+    # date
+    # flags
+    # N inv_min pow_status warn_status work_mode
+    # ^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2}).*$
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";
   } 

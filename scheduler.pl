@@ -160,6 +160,14 @@ sub stat_iterator {
   if ( $s_counter++ >= $#rrd_cmd_list) {
     debug_dumper ( 5, \%res , \@rrd_def) ;
     debug_print (5, "template: $rrd_stat_tpl \n");
+    my @vals = map { 
+    	my ($label, $cmd, $idx) = @$_ ;
+	$res{$cmd}[2][$idx-1];
+    } @rrd_def ;
+
+    debug_dumper ( 6, \@vals );
+    my $valstr = join(':', @vals );
+    debug_print (5, "values: $valstr  \n");
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";
   }

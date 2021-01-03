@@ -197,10 +197,13 @@ sub stat_iterator {
     RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
     debug_rrd (3,5, RRDs::error );
 
+    # status_rrd:
+    # inv_day: unixtime %s /  (24*60*60) i.e. fractional days since epoc
     my $i_time = $res{'T'}[2][0] ;
     my $i_dt = $my_infini_strp->parse_datetime( $i_time );
     my $i_rrdt = $i_dt->strftime('%s') /86400;
 
+    # warn status 21 bits - littleendian - hope this works....
     my @ws_ary =   @{$res{'WS'}[2]};
     my $ws_bits= 0;
     while (scalar @ws_ary ) {
@@ -209,9 +212,9 @@ sub stat_iterator {
     }
 
     # bitmapize ( @{$res{'WS'}[2]} ) ; 
-
     # debug_dumper ( 6,  $res{'WS'}[2] , $ws_bits  );
- 
+
+    # power status: last 6 fields of PS and field 1, 5 of EMINFO in littleendian
     my @ps_ary = ( @{$res{'PS'}[2]}[-6 .. -1], @{$res{'EMINFO'}[2]}[0,5] ); 
 
     debug_dumper ( 5,  $res{'PS'}[2],  $res{'EMINFO'}[2] , \@ps_ary );
@@ -223,11 +226,9 @@ sub stat_iterator {
 	    $ps_2bits |= ( pop @ps_ary & 0x03 ) ;
     }
 
-
+    # work mode: int 0 ... 6
     my $wm = $res{'MOD'}[2][0] ;
-    # date
-    # flags
-    # N inv_min pow_status warn_status work_mode
+    # N inv_min work_mode , pow_status  warn_status 
     debug_printf (5, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
 	    $i_rrdt  , $ps_2bits, $ws_bits , $wm ); 
 

@@ -206,7 +206,7 @@ sub stat_iterator {
     # date
     # flags
     # N inv_min pow_status warn_status work_mode
-    debug_print ("datetime %s\n" , $i_rrdt); 
+    debug_printf (5, "datetime %s\n" , $i_rrdt); 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";

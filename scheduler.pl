@@ -232,6 +232,12 @@ sub stat_iterator {
     debug_printf (5, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
 	    $i_rrdt  , $ps_2bits, $ws_bits , $wm ); 
 
+    my $valstr2 = join(':', ('N', $i_rrdt  , $ps_2bits, $ws_bits , $wm ));
+    RRDs::update($status_rrd,  '--template', 
+	    'inv_day:work_mode:pow_status:warn_status',  $valstr2 );
+    debug_rrd (3,5, RRDs::error );
+
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";
   } 

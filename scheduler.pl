@@ -64,7 +64,7 @@ our $rrd_stat_tpl = join(':', map { $$_[0] } @rrd_def) ;
 debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd, \@rrd_cmd_list, \@rrd_def );
 debug_print (5, "rrd_stat_tpl = \n\t$rrd_stat_tpl \n");
 
-die "### debug ---- setup-----  #####";
+# die "### debug ---- setup-----  #####";
 
 # ---- prepare file handlers ------
 
@@ -159,7 +159,7 @@ sub stat_iterator {
   # $s_counter++ >= 4 and $s_counter=0;
   if ( $s_counter++ >= $#rrd_cmd_list) {
     debug_dumper ( 5, \%res , \@rrd_def) ;
-
+    debug_print (5, "template: $rrd_stat_tpl \n");
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";
   }

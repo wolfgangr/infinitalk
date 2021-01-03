@@ -201,13 +201,13 @@ sub stat_iterator {
     my $i_dt = $my_infini_strp->parse_datetime( $i_time );
     my $i_rrdt = $i_dt->strftime('%s') /86400;
 
-    my $ws_bits=0; 
-    foreach my $i ( 0 .. $#{$res{'WS'}[2]} ) {
-	    $ws_bits <<= 1 ;
-	    # vec($ws_bits, $i, 1) = $res{'WS'}[2][ $i ] ? 1 : 0 ;
-	    $ws_bits += $res{'WS'}[2][ $i ] ? 1 : 0 ;
-	    # $ws_bits <<= 1 ;
-    }
+    my $ws_bits= bitmapize ( @{$res{'WS'}[2]} ) ; 
+    # foreach my $i ( 0 .. $#{$res{'WS'}[2]} ) {
+    #	    $ws_bits <<= 1 ;
+    #	    # vec($ws_bits, $i, 1) = $res{'WS'}[2][ $i ] ? 1 : 0 ;
+    #	    $ws_bits += $res{'WS'}[2][ $i ] ? 1 : 0 ;
+    #	    # $ws_bits <<= 1 ;
+    # }
 
     debug_dumper ( 6,  $res{'WS'}[2] , $ws_bits  );
 
@@ -311,6 +311,16 @@ sub checkstring {
   return ($label, $len,  \@data  );
 }
 
+# $bitmap = bitmapize (@flags)
+sub bitmapize {
+  my $rv = 0;
+  while (scalar @_) {
+    $rv <<= 1 ; 
+    $rv |= (shift @_) ? 1 : 0;
+
+  } # while ($#@_ >= 0);
+  return $rv;
+}
 
 # debug_print($level, $content)
 sub debug_print {

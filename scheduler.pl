@@ -201,21 +201,35 @@ sub stat_iterator {
     my $i_dt = $my_infini_strp->parse_datetime( $i_time );
     my $i_rrdt = $i_dt->strftime('%s') /86400;
 
-    my $ws_bits= bitmapize ( @{$res{'WS'}[2]} ) ; 
-    # foreach my $i ( 0 .. $#{$res{'WS'}[2]} ) {
-    #	    $ws_bits <<= 1 ;
-    #	    # vec($ws_bits, $i, 1) = $res{'WS'}[2][ $i ] ? 1 : 0 ;
-    #	    $ws_bits += $res{'WS'}[2][ $i ] ? 1 : 0 ;
-    #	    # $ws_bits <<= 1 ;
-    # }
+    my @ws_ary =   @{$res{'WS'}[2]};
+    my $ws_bits= 0;
+    while (scalar @ws_ary ) {
+            $ws_bits <<= 1;
+            $ws_bits |= ( pop @ws_ary & 0x01 ) ;
+    }
 
-    debug_dumper ( 6,  $res{'WS'}[2] , $ws_bits  );
+    # bitmapize ( @{$res{'WS'}[2]} ) ; 
+
+    # debug_dumper ( 6,  $res{'WS'}[2] , $ws_bits  );
+ 
+    my @ps_ary = ( @{$res{'PS'}[2]}[-6 .. -1], @{$res{'EMINFO'}[2]}[0,5] ); 
+
+    debug_dumper ( 5,  $res{'PS'}[2],  $res{'EMINFO'}[2] , \@ps_ary );
+
+    # pack array values into integer by 2 bits each
+    my $ps_2bits = 0;
+    while (scalar @ps_ary ) {
+	    $ps_2bits <<= 2;
+	    $ps_2bits |= ( pop @ps_ary & 0x03 ) ;
+    }
+
 
     my $wm = $res{'MOD'}[2][0] ;
     # date
     # flags
     # N inv_min pow_status warn_status work_mode
-    debug_printf (5, "datetime %s\ , warn status bits: 0x%06x , work mode: %d\n" , $i_rrdt  , $ws_bits , $wm ); 
+    debug_printf (5, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
+	    $i_rrdt  , $ps_2bits, $ws_bits , $wm ); 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";

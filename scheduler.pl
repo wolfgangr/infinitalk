@@ -291,7 +291,7 @@ sub coll_iterator {
     # next collation, may be o a rolling basis
   }
 
-  return 0 if ( $cl_counter++ >= 30) ;
+  # return 0 if ( $cl_counter++ >= 30) ;
 
   return 1;
 }

@@ -34,6 +34,6 @@ killall -9 $PROCESS  >> $LOGFILE 2>&1
 sleep 1
 
 $PRESTARTER  >> $LOGFILE 2>&1
-$STARTER   >> $UPDLOG 2>&1
+./scheduler.pl  >> $UPDLOG 2>&1   &
 
 

@@ -284,7 +284,8 @@ sub coll_iterator {
   if ( $cmd_counter++ >= $#current_cmd_list ) {
     # last command of collation is done
     debug_dumper ( 5, \%res ) ;
-
+    my $bckfile = sprintf "%s/%s.bck", $tempdir , $current_cl_tag ;
+    lock_store \%res, $bckfile; 
 
   die " ========== DEBUG in coll_iterator ====== ";
     # next collation, may be o a rolling basis

@@ -27,7 +27,7 @@ use Storable qw( lock_store );
 
 #---- config -------------
 
-our $Debug = 5;
+our $Debug = 3;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -168,7 +168,7 @@ exit;
 sub stat_iterator {
   # my $s_counter ;
   # state $time ;
-  state  $s_counter = 0;
+  state $s_counter = 0;
   state $retries =0;
   state %res=();
   debug_print (5, "stat_iterator $s_counter\n");
@@ -182,6 +182,26 @@ sub stat_iterator {
   
   my $tag =$rrd_cmd_list[$s_counter]; 
   my $resp = [ call_infini_cooked ( $tag ) ] ;
+
+
+  # implement some error tolerance
+  if ($resp) { $retries = 0; } else {
+	sleep $retries; # slow down to let things settle a bit
+	if ( $retries++ >=  $RETRY_on_infini_err ) {
+		# start from new
+		debug_printf (2, "retry overrun after %d trials in %s  \n",  
+			$retries-1 , $tag );
+		$retries = 0; 
+		$s_counter = 0;
+		%res=();
+		# if ( $cl_counter++ >= $#collations ) {  $cl_counter = 0 ; }
+		return(0);
+	}
+        debug_printf (3, "retry no %d in %s  \n" , $retries-1 , $tag  ),
+	return(0);
+  }
+
+  # fine, continue ...
   $res{$tag}=$resp ;
 
   debug_dumper ( 6, \%res ) ;
@@ -252,7 +272,7 @@ sub stat_iterator {
 	    'inv_day:work_mode:pow_status:warn_status',  $valstr2 );
     debug_rrd (3,5, RRDs::error );
 
-
+    %res=();
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # die "#### debug in  # stat_iterator ####";
   } 
@@ -294,24 +314,27 @@ sub coll_iterator {
 			$retries-1 , $current_cl_tag , $current_cmd_tag );
 		$retries = 0; 
 		$cmd_counter = 0;
+		%res = ();
 		if ( $cl_counter++ >= $#collations ) {  $cl_counter = 0 ; }
 		return(0);
 	}
-        debug_printf (3, "retry no %d in %s - %s \n"),
+        debug_printf (3, "retry no %d in %s - %s \n" ,
+		$retries-1 , $current_cl_tag , $current_cmd_tag   ),
 	return(0);
-
   }
 
+  # fine, go ahead
   $res{ $current_cmd_tag }=$resp ;
 
   if ( $cmd_counter++ >= $#current_cmd_list ) {
     # last command of collation is done
-    debug_dumper ( 5, \%res ) ;
+    debug_dumper ( 6, \%res ) ;
     my $bckfile = sprintf "%s/%s.bck", $tempdir , $current_cl_tag ;
     lock_store \%res, $bckfile; 
 
     # next collation, may be o a rolling basis
     $cmd_counter = 0;
+    %res = ();
     if ( $cl_counter++ >= $#collations ) {
 	$cl_counter = 0 ;
 	# die " ========== DEBUG in coll_iterator ====== ";

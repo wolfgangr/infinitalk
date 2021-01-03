@@ -168,15 +168,17 @@ sub stat_iterator {
     debug_print (5, "template: $rrd_stat_tpl \n");
     my @vals = map { 
     	my ($label, $cmd, $idx) = @$_ ;
-	$res{$cmd}[2][$idx-1] * $rrd_factor_map{$label};
+	($res{$cmd}[2][$idx-1] * $rrd_factor_map{$label});
     } @rrd_def ;
 
-    debug_dumper ( 6, \@vals );
-    my $valstr = join(':', @vals );
+    debug_dumper ( 5, \@vals );
+    my $valstr = join(':', 'N', @vals );
     debug_print (5, "values: $valstr  \n");
+    RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
+    debug_rrd (3,5, RRDs::error );
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";
-  }
+  } 
 
   return 1;
 }
@@ -284,3 +286,24 @@ sub debug_dumper {
   my $level = shift @_;
   print STDERR (Data::Dumper->Dump( \@_ )) if ( $level <= $Debug) ;
 }
+
+
+# debug_rrd ($level1, $level2, $ERR ) 
+#  level1 : at least to report anything, but ....
+#  level2 ... report even double update times
+sub debug_rrd {
+  my ($level1, $level2, $ERR) = @_ ;
+  return unless ($ERR);
+  return if ($Debug < $level1);
+  my $filter = '(illegal attempt to update using time )'
+  	. '(\d{10,})'
+	. '( when last update time is )'
+	. '(\d{10,})'
+	. ' (\(minimum one second step\))'  
+  ;
+  return if ( ($ERR =~ /$filter/) and ( $Debug < $level2)) ; 
+  debug_printf ($level2, "ERROR while updating : %s\n", $ERR);
+}
+
+
+

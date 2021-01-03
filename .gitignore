@@ -2,7 +2,7 @@
 *.rrd
 *.log
 create_infini_rrd.sh
-tmp/*
+tmp/**
 rrd2csv.pl
 rrdtest.pl
 

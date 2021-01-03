@@ -27,7 +27,7 @@ use Storable qw( lock_store );
 
 #---- config -------------
 
-our $Debug = 3;
+our $Debug = 4;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -137,12 +137,12 @@ while (1) {
   
   unless (stat_iterator() ) {
 	debug_print (1, "shitt happened processing stat_iterator\n");
-	last; 
+	# last; 
   }
   
   unless (coll_iterator() ) {
         debug_print (1, "shitt happened processing coll_iterator\n");
-        last;
+	# last;
   }
  
   # last if (happens(shit));
@@ -184,20 +184,24 @@ sub stat_iterator {
   my $resp = [ call_infini_cooked ( $tag ) ] ;
 
 
+  debug_dumper ( 5,  $resp , scalar @$resp ) ;
+
+  # die "===== debug =====" ;
+
   # implement some error tolerance
-  if ($resp) { $retries = 0; } else {
+  if (  (scalar @$resp) == 3  ) { $retries = 0; } else {
 	sleep $retries; # slow down to let things settle a bit
 	if ( $retries++ >=  $RETRY_on_infini_err ) {
 		# start from new
 		debug_printf (2, "retry overrun after %d trials in %s  \n",  
-			$retries-1 , $tag );
+			$retries , $tag );
 		$retries = 0; 
 		$s_counter = 0;
-		%res=();
+		# %res=();
 		# if ( $cl_counter++ >= $#collations ) {  $cl_counter = 0 ; }
 		return(0);
 	}
-        debug_printf (3, "retry no %d in %s  \n" , $retries-1 , $tag  ),
+        debug_printf (3, "retry no %d in %s  \n" , $retries , $tag  ),
 	return(0);
   }
 
@@ -236,7 +240,13 @@ sub stat_iterator {
     # inv_day: unixtime %s /  (24*60*60) i.e. fractional days since epoc
     my $i_time = $res{'T'}[2][0] ;
     my $i_dt = $my_infini_strp->parse_datetime( $i_time );
-    my $i_rrdt = $i_dt->strftime('%s') /86400;
+    my $i_rrdt ;
+    if (defined $i_dt) {  
+	$i_rrdt  =  $i_dt->strftime('%s') /86400;
+    } else {
+	$i_rrdt  = 0;
+	debug_printf(2, "cannot process timestring %s \n", $i_time );
+    }
 
     # warn status 21 bits - littleendian - hope this works....
     my @ws_ary =   @{$res{'WS'}[2]};
@@ -268,11 +278,12 @@ sub stat_iterator {
 	    $i_rrdt  , $ps_2bits, $ws_bits , $wm ); 
 
     my $valstr2 = join(':', ('N', $i_rrdt  , $ps_2bits, $ws_bits , $wm ));
+    debug_printf (4, "values_2 %s\n", $valstr2 );
     RRDs::update($status_rrd,  '--template', 
 	    'inv_day:work_mode:pow_status:warn_status',  $valstr2 );
     debug_rrd (3,5, RRDs::error );
 
-    %res=();
+    # %res=();
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # die "#### debug in  # stat_iterator ####";
   } 
@@ -294,6 +305,8 @@ sub coll_iterator {
 
   debug_printf (5, "coll_iterator %d : %d \t", $cl_counter, $cmd_counter);
 
+  unless ( $cmd_counter ) {  %res = (); }
+
   # get orientation
   my $current_cl_tag = $collations[$cl_counter] ;
   my @current_cmd_list = @{$collation_cmds{ $current_cl_tag }};
@@ -306,12 +319,12 @@ sub coll_iterator {
   my $resp = [ call_infini_cooked ( $current_cmd_tag ) ] ;
 
   # implement some error tolerance
-  if ($resp) { $retries = 0; } else {
+  if ( (scalar @$resp ) == 3) { $retries = 0; } else {
 	sleep $retries; # slow down to let things settle a bit
 	if ( $retries++ >=  $RETRY_on_infini_err ) {
 		# give up on current collation, keep saved file in place, skip to next
 		debug_printf (2, "retry overrun after %d trials in %s - %s \n",  
-			$retries-1 , $current_cl_tag , $current_cmd_tag );
+			$retries , $current_cl_tag , $current_cmd_tag );
 		$retries = 0; 
 		$cmd_counter = 0;
 		%res = ();
@@ -319,7 +332,7 @@ sub coll_iterator {
 		return(0);
 	}
         debug_printf (3, "retry no %d in %s - %s \n" ,
-		$retries-1 , $current_cl_tag , $current_cmd_tag   ),
+		$retries , $current_cl_tag , $current_cmd_tag   ),
 	return(0);
   }
 
@@ -334,7 +347,7 @@ sub coll_iterator {
 
     # next collation, may be o a rolling basis
     $cmd_counter = 0;
-    %res = ();
+    # %res = ();
     if ( $cl_counter++ >= $#collations ) {
 	$cl_counter = 0 ;
 	# die " ========== DEBUG in coll_iterator ====== ";

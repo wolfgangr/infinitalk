@@ -21,7 +21,7 @@ use RRDs;
 
 #---- config -------------
 
-our $Debug = 5;
+our $Debug = 4;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -148,10 +148,10 @@ sub stat_iterator {
   debug_print (5, "stat_iterator $s_counter\n");
 
   unless ( $s_counter) {  
-    my $time = [ call_infini_cooked ('T') ] ;  
+    # my $time = [ call_infini_cooked ('T') ] ;  
     # %res = { T=>$time } ;
     %res=();
-    $res{'T'}=$time;
+    # $res{'T'}=$time;
   }
   
   my $tag =$rrd_cmd_list[$s_counter]; 
@@ -164,6 +164,8 @@ sub stat_iterator {
   # return 0 if ( $s_counter++ >= 4) ;
   # $s_counter++ >= 4 and $s_counter=0;
   if ( $s_counter++ >= $#rrd_cmd_list) {
+    $s_counter = 0;
+
     debug_dumper ( 5, \%res , \@rrd_def) ;
     debug_print (5, "template: $rrd_stat_tpl \n");
     my @vals = map { 
@@ -173,11 +175,11 @@ sub stat_iterator {
 
     debug_dumper ( 5, \@vals );
     my $valstr = join(':', 'N', @vals );
-    debug_print (5, "values: $valstr  \n");
+    debug_print (4, "values: $valstr  \n");
     RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
     debug_rrd (3,5, RRDs::error );
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    die "#### debug in  # stat_iterator ####";
+    # die "#### debug in  # stat_iterator ####";
   } 
 
   return 1;
@@ -189,7 +191,7 @@ sub coll_iterator {
   # my $c_counter ;
   state $c_counter = 0;
   debug_print (5, "coll_iterator $c_counter\n");
-  return 0 if ( $c_counter++ >= 10) ;
+  return 0 if ( $c_counter++ >= 30) ;
 
   return 1;
 }

@@ -18,6 +18,7 @@ use Digest::CRC qw(crc) ;
 # use IO::Socket::UNIX;
 use POSIX qw( );
 use RRDs;
+use Storable qw( lock_store );
 
 #---- config -------------
 
@@ -27,6 +28,9 @@ our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
 our $infini_cmd_send_pipe = "$tempdir/cmd_send.fifo";
 our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
+
+our $status_bck = "$tempdir/status.bck";
+
 
 our @collations = qw (conf0 conf1 conf2 conf3  stat em);
 our @extra_stats = qw (T MOD WS); # commands to retrieved for status not included in @rrd_def 
@@ -168,12 +172,17 @@ sub stat_iterator {
   if ( $s_counter++ >= $#rrd_cmd_list) {
     $s_counter = 0;
 
+
+
     debug_dumper ( 5, \%res , \@rrd_def) ;
+    lock_store \%res, $status_bck; 
+
     debug_print (5, "template: $rrd_stat_tpl \n");
     my @vals = map { 
     	my ($label, $cmd, $idx) = @$_ ;
 	($res{$cmd}[2][$idx-1] * $rrd_factor_map{$label});
     } @rrd_def ;
+
 
     debug_dumper ( 5, \@vals );
     my $valstr = join(':', 'N', @vals );

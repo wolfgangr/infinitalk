@@ -198,11 +198,8 @@ sub stat_iterator {
     debug_rrd (3,5, RRDs::error );
 
     my $i_time = $res{'T'}[2][0] ;
-    # my $strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
     my $i_dt = $my_infini_strp->parse_datetime( $i_time );
     my $i_rrdt = $i_dt->strftime('%s') /86400;
-
-    # debug_dumper ( 5,  \@{$res{'WS'}[2]}  );
 
     my $ws_bits=0; 
     foreach my $i ( 0 .. $#{$res{'WS'}[2]} ) {
@@ -212,7 +209,7 @@ sub stat_iterator {
 	    # $ws_bits <<= 1 ;
     }
 
-    debug_dumper ( 5,  \@{$res{'WS'}[2]} , $ws_bits  );
+    debug_dumper ( 6,  \@{$res{'WS'}[2]} , $ws_bits  );
 
 
     # date

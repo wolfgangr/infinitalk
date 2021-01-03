@@ -19,7 +19,7 @@ use DateTime::Format::Strptime();
 our $my_infini_strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
 
 
-# use Time::HiRes ;
+use Time::HiRes qw( usleep );
 # use IO::Socket::UNIX;
 use POSIX qw( );
 use RRDs();
@@ -45,7 +45,7 @@ our $infini_rrd = "$rrddir/infini.rrd";
 our $status_rrd = "$rrddir/status.rrd";
 
 our $RETRY_on_infini_err = 3 ;
-
+our $Usleep_between_cmd = 1e4 ; 
 
 # ------ protocol definition ----- 
 
@@ -139,12 +139,17 @@ while (1) {
 	debug_print (1, "shitt happened processing stat_iterator\n");
 	# last; 
   }
-  
+  # sleep 1;
+  usleep $Usleep_between_cmd ;
+
   unless (coll_iterator() ) {
         debug_print (1, "shitt happened processing coll_iterator\n");
 	# last;
   }
  
+  # sleep 1;
+  usleep $Usleep_between_cmd ;
+
   # last if (happens(shit));
   # die "############### DEBUG #############";
 } # ===== end of main scheduler loop

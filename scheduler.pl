@@ -291,7 +291,7 @@ sub coll_iterator {
     $cmd_counter = 0;
     if ( $cl_counter++ >= $#collations ) {
 	$cl_counter = 0 ;
-        die " ========== DEBUG in coll_iterator ====== ";
+	# die " ========== DEBUG in coll_iterator ====== ";
     }
   }
 

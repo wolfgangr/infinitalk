@@ -53,7 +53,7 @@ foreach my $dl (@rrd_def) {
 	$rrd_def_by_label{ $$dl[0] } = $dl ; # this one works in a single run
 	$rrd_def_by_cmd{ $$dl[1] } = [] ;    # collect list of P17 commands in use
 
-	my $fac = $p17{$$dl[1]}->{'factors'}[$$dl[2]]  ;
+	my $fac = $p17{$$dl[1]}->{'factors'}[$$dl[2]-1]  ;
 	$fac = 1 unless defined ( $fac) ;
 	$rrd_factor_map{ $$dl[0] } = $fac ;
 }
@@ -70,7 +70,7 @@ our $rrd_stat_tpl = join(':', map { $$_[0] } @rrd_def) ;
 debug_dumper(5, \%rrd_def_by_label , \%rrd_def_by_cmd, \@rrd_cmd_list, \@rrd_def , \%rrd_factor_map );
 debug_print (5, "rrd_stat_tpl = \n\t$rrd_stat_tpl \n");
 
-die "### debug ---- setup-----  #####";
+# die "### debug ---- setup-----  #####";
 
 # ---- prepare file handlers ------
 
@@ -168,7 +168,7 @@ sub stat_iterator {
     debug_print (5, "template: $rrd_stat_tpl \n");
     my @vals = map { 
     	my ($label, $cmd, $idx) = @$_ ;
-	$res{$cmd}[2][$idx-1] * $rrd_factor_map[$label];
+	$res{$cmd}[2][$idx-1] * $rrd_factor_map{$label};
     } @rrd_def ;
 
     debug_dumper ( 6, \@vals );

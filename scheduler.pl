@@ -44,6 +44,9 @@ our $rrddir= '.';
 our $infini_rrd = "$rrddir/infini.rrd";
 our $status_rrd = "$rrddir/status.rrd";
 
+our $RETRY_on_infini_err = 3 ;
+
+
 # ------ protocol definition ----- 
 
 our %p17;
@@ -166,6 +169,7 @@ sub stat_iterator {
   # my $s_counter ;
   # state $time ;
   state  $s_counter = 0;
+  state $retries =0;
   state %res=();
   debug_print (5, "stat_iterator $s_counter\n");
 
@@ -265,6 +269,7 @@ sub coll_iterator {
   #
   state $cl_counter = 0;
   state $cmd_counter = 0;
+  state $retries = 0;
   state %res = ();
 
   debug_printf (5, "coll_iterator %d : %d \t", $cl_counter, $cmd_counter);
@@ -279,6 +284,24 @@ sub coll_iterator {
   debug_printf (5, " processing collation =%s, command=%s\n", $current_cl_tag, $current_cmd_tag );
 
   my $resp = [ call_infini_cooked ( $current_cmd_tag ) ] ;
+
+  # implement some error tolerance
+  if ($resp) { $retries = 0; } else {
+	sleep $retries; # slow down to let things settle a bit
+	if ( $retries++ >=  $RETRY_on_infini_err ) {
+		# give up on current collation, keep saved file in place, skip to next
+		debug_printf (2, "retry overrun after %d trials in %s - %s \n",  
+			$retries-1 , $current_cl_tag , $current_cmd_tag );
+		$retries = 0; 
+		$cmd_counter = 0;
+		if ( $cl_counter++ >= $#collations ) {  $cl_counter = 0 ; }
+		return(0);
+	}
+        debug_printf (3, "retry no %d in %s - %s \n"),
+	return(0);
+
+  }
+
   $res{ $current_cmd_tag }=$resp ;
 
   if ( $cmd_counter++ >= $#current_cmd_list ) {

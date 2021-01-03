@@ -45,7 +45,7 @@ our $infini_rrd = "$rrddir/infini.rrd";
 our $status_rrd = "$rrddir/status.rrd";
 
 our $RETRY_on_infini_err = 3 ;
-our $Usleep_between_cmd = 1e4 ; 
+our $Usleep_between_cmd = 1e5 ; 
 
 # ------ protocol definition ----- 
 

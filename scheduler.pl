@@ -287,8 +287,12 @@ sub coll_iterator {
     my $bckfile = sprintf "%s/%s.bck", $tempdir , $current_cl_tag ;
     lock_store \%res, $bckfile; 
 
-  die " ========== DEBUG in coll_iterator ====== ";
     # next collation, may be o a rolling basis
+    $cmd_counter = 0;
+    if ( $cl_counter++ >= $#collations ) {
+	$cl_counter = 0 ;
+        die " ========== DEBUG in coll_iterator ====== ";
+    }
   }
 
   # return 0 if ( $cl_counter++ >= 30) ;

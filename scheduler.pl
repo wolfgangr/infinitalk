@@ -202,11 +202,23 @@ sub stat_iterator {
     my $i_dt = $my_infini_strp->parse_datetime( $i_time );
     my $i_rrdt = $i_dt->strftime('%s') /86400;
 
+    # debug_dumper ( 5,  \@{$res{'WS'}[2]}  );
+
+    my $ws_bits=0; 
+    foreach my $i ( 0 .. $#{$res{'WS'}[2]} ) {
+	    $ws_bits <<= 1 ;
+	    # vec($ws_bits, $i, 1) = $res{'WS'}[2][ $i ] ? 1 : 0 ;
+	    $ws_bits += $res{'WS'}[2][ $i ] ? 1 : 0 ;
+	    # $ws_bits <<= 1 ;
+    }
+
+    debug_dumper ( 5,  \@{$res{'WS'}[2]} , $ws_bits  );
+
 
     # date
     # flags
     # N inv_min pow_status warn_status work_mode
-    debug_printf (5, "datetime %s\n" , $i_rrdt); 
+    debug_printf (5, "datetime %s\ WS bits: 0x%06x n" , $i_rrdt  , $ws_bits ); 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";

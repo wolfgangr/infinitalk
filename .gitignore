@@ -2,3 +2,4 @@
 *.rrd
 *.log
 create_infini_rrd.sh
+tmp/*

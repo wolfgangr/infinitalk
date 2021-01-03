@@ -63,8 +63,8 @@ foreach  my $dl (@rrd_def) {
 	$rrd_def_by_cmd{ $$dl[1] }[ $$dl[2] -1  ] = $dl ;
 }
 
-# our @rrd_cmd_list = @extra_stats , sort keys %rrd_def_by_cmd;
-our @rrd_cmd_list =  sort keys %rrd_def_by_cmd;
+our @rrd_cmd_list = ( @extra_stats , ( sort keys %rrd_def_by_cmd ) ) ;
+# our @rrd_cmd_list =  sort keys %rrd_def_by_cmd;
 
 our $rrd_stat_tpl = join(':', map { $$_[0] } @rrd_def) ;
 

@@ -198,20 +198,15 @@ sub stat_iterator {
     debug_rrd (3,5, RRDs::error );
 
     my $i_time = $res{'T'}[2][0] ;
-    # my @i_tm = ( $i_time =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2}).*$/ ) ;
-    # my $s_time = POSIX::strftime("%s", @i_tm[0 .. 4] ,0, -1,-1,-1  ) ;
-    # debug_dumper( 5,  $i_time, \@i_tm,  $s_time / 86400);
-
     # my $strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
-    my $dt = $my_infini_strp->parse_datetime( $i_time );
-    my $footime = $dt->strftime('%s') ;
+    my $i_dt = $my_infini_strp->parse_datetime( $i_time );
+    my $i_rrdt = $i_dt->strftime('%s') /86400;
 
-    debug_dumper( 5,  $footime, $footime/86400 );
 
     # date
     # flags
     # N inv_min pow_status warn_status work_mode
-    # ^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2}).*$
+    debug_print ("datetime %s\n" , $i_rrdt); 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";

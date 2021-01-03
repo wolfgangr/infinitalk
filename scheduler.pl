@@ -27,7 +27,7 @@ use Storable qw( lock_store );
 
 #---- config -------------
 
-our $Debug = 55555;
+our $Debug = 5;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -191,7 +191,7 @@ sub stat_iterator {
     } @rrd_def ;
 
 
-    debug_dumper ( 5, \@vals );
+    debug_dumper ( 6, \@vals );
     my $valstr = join(':', 'N', @vals );
     debug_print (4, "values: $valstr  \n");
     RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
@@ -209,13 +209,13 @@ sub stat_iterator {
 	    # $ws_bits <<= 1 ;
     }
 
-    debug_dumper ( 6,  \@{$res{'WS'}[2]} , $ws_bits  );
+    debug_dumper ( 6,  $res{'WS'}[2] , $ws_bits  );
 
-
+    my $wm = $res{'MOD'}[2][0] ;
     # date
     # flags
     # N inv_min pow_status warn_status work_mode
-    debug_printf (5, "datetime %s\ WS bits: 0x%06x n" , $i_rrdt  , $ws_bits ); 
+    debug_printf (5, "datetime %s\ , warn status bits: 0x%06x , work mode: %d\n" , $i_rrdt  , $ws_bits , $wm ); 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     die "#### debug in  # stat_iterator ####";

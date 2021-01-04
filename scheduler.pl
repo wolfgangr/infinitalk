@@ -37,8 +37,6 @@ our $Debug = 4;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
-# our $infini_cmd_send_pipe = "$tempdir/cmd_send.fifo";
-# our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
 
 
 
@@ -104,23 +102,6 @@ foreach my $cl (@collations) {
 
 debug_dumper(5, \@collations, \%collation_cmds) ;
 
-# die "### debug ---- setup-----  #####";
-
-# ---- prepare file handlers ------
-
-# unlink ( $infini_cmd_send_pipe, $infini_cmd_read_pipe);
-# POSIX::mkfifo("$infini_cmd_send_pipe", 0666) or die "canot create fifo $infini_cmd_send_pipe : $!";
-# POSIX::mkfifo("$infini_cmd_read_pipe", 0666) or die "canot create fifo $infini_cmd_read_pipe : $!";
-# debug_print (5, "fifos created ...\n");
-
-# our $INFINI;
-# our $INF_INV ;
-# $INF_INV =  POSIX::open( $infini_device )   or die "canot open $infini_device : $!";
-# debug_print (5,  "connected to infini\n");
-# debug_dumper (5, $INF_INV );
-# die "### debug #####";
-
-# ----------------------------
 # set up sysV message queue
 
 # create token by script location
@@ -138,18 +119,6 @@ our %mq_clientlist =();
 
 open ( my $INFINI,  "+<", $infini_device ) or die "canot open $infini_device : $!";
 $/ = "\r" ; # change line terminator
-
-# our $SEND_PIPE = POSIX::open($infini_cmd_send_pipe,  
-# 	&POSIX::O_RDONLY | &POSIX::O_NONBLOCK ) 
-# 	or die "cannot open socket $infini_cmd_send_pipe : $!";
-# debug_print (5,  "send pipe open\n") ;
-
-# open(our $READ_PIPE, '>>', $infini_cmd_read_pipe ) or die "cannot open socket $infini_cmd_send_pipe: $!";
-
-# our $READ_PIPE = POSIX::open($infini_cmd_read_pipe,  
-# 	&POSIX::O_NONBLOCK  ) 
-# 	or die "cannot open socket $infini_cmd_read_pipe : $!";
-# debug_print (5,  "read pipe open\n");
 
 # ========= main scheduler loop =============
 
@@ -190,9 +159,6 @@ while (1) {
 SHITTHAPPENED:
 debug_print (1, "shitt happened, main loop cancelled \n");
 
-# POSIX::close $SEND_PIPE; 
-# POSIX::close $READ_PIPE;
-# POSIX::close $INFINI;
 close $INFINI;
 
 debug_print (1, "cleanup done \n");

@@ -31,15 +31,21 @@ while (1) {
     my $client_key = hex ( $x_client_key );
     # do we know the guy?
     printf (" string: %s - ", $x_client_key  ) ;
-    unless ( $clientlist{$x_client_key} ) {
+    my $mq_cli = $clientlist{$x_client_key} ;
+    unless ( $mq_cli ) {
       # if not yet, try to get its response queue
       my $client_key = hex ( $x_client_key );
       printf (" , dec %d, hex 0x%08x    ", ($client_key) x2 ) ;
-      $clientlist{$x_client_key}  
+      $mq_cli = $clientlist{$x_client_key}  #   =
       		# = IPC::Msg->new(  $client_key  , S_IRUSR | S_IWUSR | IPC_CREAT ) ;
 		= IPC::Msg->new(  $client_key  , 0) ;
       printf " opening queue for client 0x%08x %s \n", $client_key, 
-    	  $clientlist{$x_client_key} ? 'succeeded' : 'failed' ;
+    	  $mq_cli  ? 'succeeded' : 'failed' ;
+      }
+
+      if ( $mq_cli ) {
+	 my $response = sprintf "hello, %s", $x_client_key ;
+	 $mq_cli->snd(1, $response) ;
       }
   }
   printf "\t%d\n", $cnt;

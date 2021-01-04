@@ -174,13 +174,32 @@ sub mq_processor {
   if ($buf) {
     debug_printf (3, "message: %s,", $buf) ;
     # 0xclid:0xtimestamp:cmd:cnt
-    my ($clid, $c_ts, $cmd, $cnt) = $buf  =~
+    my ($x_client_key, $c_ts, $cmd, $cnt) = $buf  =~
         /^([0-9a-fA-F]{8})\:([0-9a-fA-F]{8})\:([^\:]*)\:([^\:]*)$/ ;
     if ($cnt) {
        debug_printf (3, "  clid=%s,  c_ts=%s,  cmd=%s,  cnt=%s \n", 
-	       $clid, $c_ts, $cmd, $cnt );
+	       $x_client_key, $c_ts, $cmd, $cnt );
+       # check in list of known clients
+       my $mq_cli = $mq_clientlist{$x_client_key} ;
+       unless ( $mq_cli ) {
+          my $client_key = hex ( $x_client_key ); # num from hex
+          debug_printf (3, " , dec %d, hex 0x%08x    ", ($client_key) x2 ) ;
+
+	  # try to assign a client mq
+          $mq_cli = $mq_clientlist{$x_client_key}  #   =
+      		# = IPC::Msg->new(  $client_key  , S_IRUSR | S_IWUSR | IPC_CREAT ) ;
+		= IPC::Msg->new(  $client_key  , 0) ;
+
+          debug_printf(3, " opening queue for client 0x%08x %s \n", $client_key, 
+	    	  $mq_cli  ? 'succeeded' : 'failed' ) ;
+       }
+
+       if ( $mq_cli ) {
+       }
+
+
     } else {
-       debug_printf (2, " - unparseable request %s\n", $buf);
+       debug_printf (2, " - unparseable mq request %s\n", $buf);
     }
   }
   return 1;

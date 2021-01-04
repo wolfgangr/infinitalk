@@ -40,7 +40,7 @@ while (1) {
 
   print $buf , "\n" if $buf  ;
 
-  # sleep 4;
+  sleep 4;
   $cnt++;
 
 

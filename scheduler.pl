@@ -165,13 +165,19 @@ debug_print (1, "cleanup done \n");
 
 exit;
 
-#~~~ iterator ~~~~~~~~~~~~~
+#~~~ iterators ~~~~~~~~~~~~~
 # check for client command request and try to answer them at our best possibility
 sub mq_processor {
-	# return undef ;
-	return 1;
+  # return undef ;
+  my $buf;
+  $mq_my->rcv($buf, 256, 1, IPC_NOWAIT );
+  if ($buf) {
+    debug_printf (3, "message: %s,\n", $buf) ;
+  }
+  return 1;
 }
 
+# ------------------------------- stat_iterator ------------------------
 # tag list @rrd_cmd_list
 # collection struct:
 sub stat_iterator {

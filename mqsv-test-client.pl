@@ -8,7 +8,7 @@ use IPC::Msg();
 use Cwd qw( realpath );
 
 my $ftokid = 1;
-my $server = './mqsv-tester.pl';
+my $server = './scheduler.pl';
 my $ftok_server = ftok ( my_realpath ($server) );
 my $ftok_my = ftok ( my_realpath ($0) );
 

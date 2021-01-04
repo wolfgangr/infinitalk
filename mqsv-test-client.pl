@@ -12,8 +12,10 @@ my $server = './mqsv-tester.pl';
 my $ftok_server = ftok ( realpath ($server) );
 my $ftok_my = ftok ( realpath ($0) );
 
-my $mq_srv = IPC::Msg->new($ftok_server ,  S_IWUSR |  IPC_CREAT );
-my $mq_my  = IPC::Msg->new($ftok_my     ,  S_IRUSR |  IPC_CREAT );
+my $mq_srv = IPC::Msg->new($ftok_server ,  S_IWUSR | S_IRUSR |  IPC_CREAT )
+	 or die sprintf ( "cant create server mq using token >0x%08x< ", $ftok_server ); 
+my $mq_my  = IPC::Msg->new($ftok_my     ,  S_IWUSR | S_IRUSR |  IPC_CREAT )
+	or die sprintf ( "cant create server mq using token >0x%08x< ", $ftok_my  );
 
 print "setup done \n";
 

@@ -10,51 +10,24 @@ use Cwd qw( realpath );
 
 use Data::Dumper qw (Dumper) ;
 
-# my $pwd = `pwd`;
-# chomp $pwd;
-# $pwd ='';
-# my $path = $pwd .  "/$0" ;
-my $path = realpath ($0)  ;
-# printf "%s\n", $path ;  
-# $path = "/home/wrosner/infini/parsel/qsv-tester.pl" ;
-# $path = "/home/wrosner/infini/parsel/tmp/test.mq" ;
-my $ftok_foo = ftok ( realpath ($0),   'f' );
-my $ftok_bar = ftok ( realpath ($0),  'b' );
-my $ftok_def = ftok ( realpath ($0) ); 
+my $ftok_my = ftok ( realpath ($0) ); 
 
-printf "ftoks von foo: 0x%08x , bar: 0x%08x , default 0x%08x in path %s \n", $ftok_foo, $ftok_bar, $ftok_def, $path ;
+# my $mq_my = IPC::Msg->new($ftok_my , S_IRUSR | S_IWUSR | IPC_CREAT );
+
+my $mq_my  = IPC::Msg->new($ftok_my     ,  S_IWUSR | S_IRUSR |  IPC_CREAT )
+        or die sprintf ( "cant create server mq using token >0x%08x< ", $ftok_my  );
 
 
-my $msg ;
-$msg = IPC::Msg->new($ftok_foo , S_IRUSR | S_IWUSR |  IPC_CREAT );
 
-# $msg->snd($msgtype, $msgdata);
-
-$msg->snd(3, "foo bar tralala");
-
-print Dumper ( \$msg );
-
-my $stat = $msg->stat();
-
-print Dumper ( $stat );
-
-printf "identifier: %s\n", $msg->id ;
-
-my $buf;
-$msg->rcv($buf, 256);
-
-print $buf , "\n";
-
-my $ds = $msg->stat;
-
-my $cnt;
+my $cnt = 0;
 while (1) {
-  printf "%d, \n" , $cnt++ ;
-  sleep 1;
-  $cnt = 0 if $cnt >= 10 ;
+  my $buf;
+  $mq_my->rcv($buf, 256);
+  printf "message: %s, counter %i, \n",  $buf, $cnt ;
+  $cnt++; 
 };
 
-$msg->remove;
+$mq_my->remove;
 
 exit 1;
 

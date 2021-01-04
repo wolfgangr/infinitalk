@@ -172,7 +172,16 @@ sub mq_processor {
   my $buf;
   $mq_my->rcv($buf, 256, 1, IPC_NOWAIT );
   if ($buf) {
-    debug_printf (3, "message: %s,\n", $buf) ;
+    debug_printf (3, "message: %s,", $buf) ;
+    # 0xclid:0xtimestamp:cmd:cnt
+    my ($clid, $c_ts, $cmd, $cnt) = $buf  =~
+        /^([0-9a-fA-F]{8})\:([0-9a-fA-F]{8})\:([^\:]*)\:([^\:]*)$/ ;
+    if ($cnt) {
+       debug_printf (3, "  clid=%s,  c_ts=%s,  cmd=%s,  cnt=%s \n", 
+	       $clid, $c_ts, $cmd, $cnt );
+    } else {
+       debug_printf (2, " - unparseable request %s\n", $buf);
+    }
   }
   return 1;
 }

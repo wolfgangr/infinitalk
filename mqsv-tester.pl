@@ -27,7 +27,8 @@ while (1) {
 
   if ($buf) {
     printf "message: %s, counter %i, \n",  $buf, $cnt ;
-    my ( $x_client_key , $text ) = split ( ':', $buf, 2);
+    # my ( $x_client_key , $text ) = split ( ':', $buf, 2);
+    my ( $x_client_key , $text , $cl_cnt) = $buf =~ /^(.{8})\:(.*) No (\d+)$/;
     my $client_key = hex ( $x_client_key );
     # do we know the guy?
     printf (" string: %s - ", $x_client_key  ) ;
@@ -44,7 +45,8 @@ while (1) {
       }
 
       if ( $mq_cli ) {
-	 my $response = sprintf "hello, %s", $x_client_key ;
+	 my $response = sprintf "hello, %s, server response at no %d to your request %d ", 
+	 	$x_client_key , $cnt, $cl_cnt ;
 	 $mq_cli->snd(1, $response) ;
       }
   }

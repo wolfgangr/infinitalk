@@ -47,7 +47,12 @@ print $buf , "\n";
 
 my $ds = $msg->stat;
 
-while (1) {};
+my $cnt;
+while (1) {
+  printf "%d, \r" , $cnt++ ;
+  sleep 1;
+  $cnt = 0 if $cnt >= 10 ;
+};
 
 $msg->remove;
 
@@ -55,10 +60,3 @@ exit 1;
 
 # ~~~~~~~~~~~~~~~~~~~
 # return a ftok based on some key an our own script pathname
-sub my_ftok{ 
-  my $id = shift || 1 ;
-  my $pwd = `pwd`;
-  chomp $pwd;
-
-  return ftok(spritf ("%s/%s", $pwd, $0), $id )
-}

@@ -407,25 +407,25 @@ sub coll_iterator {
 # subs....
 
 # my_POSIX_print ($filedsc, $string )
-sub my_POSIX_print {
-  my ($FD, $str ) =  @_; 
-  my $rv =  POSIX::write( $FD, $str, length($str) );
-  die "error writing to $FD : $!" unless defined ($rv);
-  return $rv;
-}
+# sub my_POSIX_print {
+#   my ($FD, $str ) =  @_; 
+#   my $rv =  POSIX::write( $FD, $str, length($str) );
+#   die "error writing to $FD : $!" unless defined ($rv);
+#   return $rv;
+# }
 
-sub my_POSIX_printf {
-  my $FD = shift @_;
-  return my_POSIX_print ( $FD, sprintf (@_));
-}
+# sub my_POSIX_printf {
+#   my $FD = shift @_;
+#   return my_POSIX_print ( $FD, sprintf (@_));
+# }
 
 # my_POSIX_readline ($FH);
-sub my_POSIX_readall {
-  my $FD = shift @_;
-  my ($rv, $chunk);
-  while ( POSIX::read( $FD, $chunk, 15 )) { $rv .= $chunk ; }
-  return $rv ; 
-}
+# sub my_POSIX_readall {
+#   my $FD = shift @_;
+#   my ($rv, $chunk);
+#   while ( POSIX::read( $FD, $chunk, 15 )) { $rv .= $chunk ; }
+#   return $rv ; 
+# }
 
 # $response = call_infini_raw ($request)
 sub call_infini_raw {

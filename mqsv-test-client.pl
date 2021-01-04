@@ -29,13 +29,14 @@ while (1) {
   $mq_srv->snd (1, $msg );
   print " ... done \n";
 
+  sleep 1;
 
   my $buf;
   $mq_my->rcv($buf, 256, 1 , IPC_NOWAIT  );
 
   print $buf , "\n" if $buf  ;
 
-  sleep 5;
+  sleep 4;
   $cnt++;
 
 

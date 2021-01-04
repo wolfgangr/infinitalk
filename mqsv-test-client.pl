@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use IPC::SysV qw(IPC_PRIVATE S_IRUSR S_IWUSR ftok IPC_CREAT  );
+use IPC::SysV qw(IPC_PRIVATE S_IRUSR S_IWUSR ftok IPC_CREAT IPC_NOWAIT );
 use IPC::Msg();
 use Cwd qw( realpath );
 
@@ -23,14 +23,14 @@ my $cnt =1;
 while (1) {
   my $msg = sprintf ("%08x:client test message No %s" , $ftok_my, $cnt );
   print "sending .... ", $msg ;
-  $mq_srv->snd (3, $msg );
+  $mq_srv->snd (1, $msg );
   print " ... done \n";
 
 
-  # my $buf;
-  # $mq_my->rcv($buf, 256);
+  my $buf;
+  $mq_my->rcv($buf, 256, 1 , IPC_NOWAIT  );
 
-  # print $buf , "\n";
+  print $buf , "\n" if $buf  ;
 
   sleep 5;
   $cnt++;

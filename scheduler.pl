@@ -21,9 +21,15 @@ our $my_infini_strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M')
 
 use Time::HiRes qw( usleep );
 # use IO::Socket::UNIX;
-use POSIX qw( );
+# use POSIX qw( );
 use RRDs();
 use Storable qw( lock_store );
+
+use IPC::SysV qw(IPC_PRIVATE S_IRUSR S_IWUSR ftok IPC_CREAT IPC_NOWAIT  );
+use IPC::Msg();
+use Cwd qw( realpath );
+
+
 
 #---- config -------------
 
@@ -31,8 +37,10 @@ our $Debug = 4;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
-our $infini_cmd_send_pipe = "$tempdir/cmd_send.fifo";
-our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
+# our $infini_cmd_send_pipe = "$tempdir/cmd_send.fifo";
+# our $infini_cmd_read_pipe = "$tempdir/cmd_read.fifo";
+
+
 
 our $status_bck = "$tempdir/status.bck";
 
@@ -46,6 +54,7 @@ our $status_rrd = "$rrddir/status.rrd";
 
 our $RETRY_on_infini_err = 3 ;
 our $Usleep_between_cmd = 1e5 ; 
+
 
 # ------ protocol definition ----- 
 
@@ -99,10 +108,10 @@ debug_dumper(5, \@collations, \%collation_cmds) ;
 
 # ---- prepare file handlers ------
 
-unlink ( $infini_cmd_send_pipe, $infini_cmd_read_pipe);
-POSIX::mkfifo("$infini_cmd_send_pipe", 0666) or die "canot create fifo $infini_cmd_send_pipe : $!";
-POSIX::mkfifo("$infini_cmd_read_pipe", 0666) or die "canot create fifo $infini_cmd_read_pipe : $!";
-debug_print (5, "fifos created ...\n");
+# unlink ( $infini_cmd_send_pipe, $infini_cmd_read_pipe);
+# POSIX::mkfifo("$infini_cmd_send_pipe", 0666) or die "canot create fifo $infini_cmd_send_pipe : $!";
+# POSIX::mkfifo("$infini_cmd_read_pipe", 0666) or die "canot create fifo $infini_cmd_read_pipe : $!";
+# debug_print (5, "fifos created ...\n");
 
 # our $INFINI;
 # our $INF_INV ;
@@ -111,20 +120,36 @@ debug_print (5, "fifos created ...\n");
 # debug_dumper (5, $INF_INV );
 # die "### debug #####";
 
+# ----------------------------
+# set up sysV message queue
+
+# create token by script location
+my $ftok_my = ftok ( realpath ($0) );
+
+# assign message queue for requests to us
+our $mq_my  = IPC::Msg->new($ftok_my     ,  S_IWUSR | S_IRUSR |  IPC_CREAT  )
+        or die sprintf ( "cant create server mq using token >0x%08x< ", $ftok_my  );
+
+# where we store the qeue handlers of clients
+# hope there are not so many that we run out of memory....
+our %mq_clientlist =();   
+
+# ----------------------------
+
 open ( my $INFINI,  "+<", $infini_device ) or die "canot open $infini_device : $!";
 $/ = "\r" ; # change line terminator
 
-our $SEND_PIPE = POSIX::open($infini_cmd_send_pipe,  
-	&POSIX::O_RDONLY | &POSIX::O_NONBLOCK ) 
-	or die "cannot open socket $infini_cmd_send_pipe : $!";
-debug_print (5,  "send pipe open\n") ;
+# our $SEND_PIPE = POSIX::open($infini_cmd_send_pipe,  
+# 	&POSIX::O_RDONLY | &POSIX::O_NONBLOCK ) 
+# 	or die "cannot open socket $infini_cmd_send_pipe : $!";
+# debug_print (5,  "send pipe open\n") ;
 
 # open(our $READ_PIPE, '>>', $infini_cmd_read_pipe ) or die "cannot open socket $infini_cmd_send_pipe: $!";
 
-our $READ_PIPE = POSIX::open($infini_cmd_read_pipe,  
-	&POSIX::O_NONBLOCK  ) 
-	or die "cannot open socket $infini_cmd_read_pipe : $!";
-debug_print (5,  "read pipe open\n");
+# our $READ_PIPE = POSIX::open($infini_cmd_read_pipe,  
+# 	&POSIX::O_NONBLOCK  ) 
+# 	or die "cannot open socket $infini_cmd_read_pipe : $!";
+# debug_print (5,  "read pipe open\n");
 
 # ========= main scheduler loop =============
 
@@ -147,6 +172,12 @@ while (1) {
 	# last;
   }
  
+  unless (mq_processor() ) {
+	debug_print (1, "shitt happened processing mq_processor\n");
+        last;
+  }
+
+
   # sleep 1;
   usleep $Usleep_between_cmd ;
 
@@ -159,8 +190,8 @@ while (1) {
 SHITTHAPPENED:
 debug_print (1, "shitt happened, main loop cancelled \n");
 
-POSIX::close $SEND_PIPE; 
-POSIX::close $READ_PIPE;
+# POSIX::close $SEND_PIPE; 
+# POSIX::close $READ_PIPE;
 POSIX::close $INFINI;
 
 debug_print (1, "cleanup done \n");
@@ -168,6 +199,11 @@ debug_print (1, "cleanup done \n");
 exit;
 
 #~~~ iterator ~~~~~~~~~~~~~
+# check for client command request and try to answer them at our best possibility
+sub mq_processor {
+  return undef ;
+}
+
 # tag list @rrd_cmd_list
 # collection struct:
 sub stat_iterator {

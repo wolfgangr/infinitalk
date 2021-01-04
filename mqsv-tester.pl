@@ -49,7 +49,7 @@ my $ds = $msg->stat;
 
 my $cnt;
 while (1) {
-  printf "%d, \r" , $cnt++ ;
+  printf "%d, \n" , $cnt++ ;
   sleep 1;
   $cnt = 0 if $cnt >= 10 ;
 };

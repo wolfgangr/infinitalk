@@ -35,7 +35,8 @@ while (1) {
     unless ( $clientlist{$x_client_key} ) {
       # if not yet, try to get its response queue
       $clientlist{$x_client_key}  
-      	   = IPC::Msg->new(  $client_key  , S_IRUSR | S_IWUSR | IPC_CREAT ) ;
+      		# = IPC::Msg->new(  $client_key  , S_IRUSR | S_IWUSR | IPC_CREAT ) ;
+		= IPC::Msg->new(  $client_key  , 0) ;
       printf " opening queue for client 0x%08x %s \n", $client_key, 
     	  $clientlist{$x_client_key} ? 'succeeded' : 'failed' ;
       }

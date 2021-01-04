@@ -28,12 +28,13 @@ while (1) {
   if ($buf) {
     printf "message: %s, counter %i, \n",  $buf, $cnt ;
     my ( $x_client_key , $text ) = split ( ':', $buf, 2);
-    # $client_key = ( '0x' . $client_key ) * 1; 
     my $client_key = hex ( $x_client_key );
     # do we know the guy?
-    printf (" string: %s, dec %d, hex 0x%08x    ", $x_client_key , ($client_key) x2 ) ;
+    printf (" string: %s - ", $x_client_key  ) ;
     unless ( $clientlist{$x_client_key} ) {
       # if not yet, try to get its response queue
+      my $client_key = hex ( $x_client_key );
+      printf (" , dec %d, hex 0x%08x    ", ($client_key) x2 ) ;
       $clientlist{$x_client_key}  
       		# = IPC::Msg->new(  $client_key  , S_IRUSR | S_IWUSR | IPC_CREAT ) ;
 		= IPC::Msg->new(  $client_key  , 0) ;

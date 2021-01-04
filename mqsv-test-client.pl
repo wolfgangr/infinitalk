@@ -23,14 +23,14 @@ my $cnt =1;
 while (1) {
   my $msg = sprintf ("%08x:client test message No %s" , $ftok_my, $cnt );
   print "sending .... ", $msg ;
-  $mq_srv->snd (3, `date`);
+  $mq_srv->snd (3, $msg );
   print " ... done \n";
 
 
-  my $buf;
-  $mq_my->rcv($buf, 256);
+  # my $buf;
+  # $mq_my->rcv($buf, 256);
 
-  print $buf , "\n";
+  # print $buf , "\n";
 
   sleep 5;
   $cnt++;

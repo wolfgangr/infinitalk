@@ -192,7 +192,8 @@ debug_print (1, "shitt happened, main loop cancelled \n");
 
 # POSIX::close $SEND_PIPE; 
 # POSIX::close $READ_PIPE;
-POSIX::close $INFINI;
+# POSIX::close $INFINI;
+close $INFINI;
 
 debug_print (1, "cleanup done \n");
 
@@ -201,7 +202,8 @@ exit;
 #~~~ iterator ~~~~~~~~~~~~~
 # check for client command request and try to answer them at our best possibility
 sub mq_processor {
-  return undef ;
+	# return undef ;
+	return 1;
 }
 
 # tag list @rrd_cmd_list

@@ -9,8 +9,11 @@ use Cwd qw( realpath );
 
 my $ftokid = 1;
 my $server = './mqsv-tester.pl';
-my $ftok_server = ftok ( realpath ($server) );
-my $ftok_my = ftok ( realpath ($0) );
+my $ftok_server = ftok ( my_realpath ($server) );
+my $ftok_my = ftok ( my_realpath ($0) );
+
+printf "\$0: %s, realpath: %s \n", $0, realpath ($0);
+
 
 my $mq_srv = IPC::Msg->new($ftok_server ,  S_IWUSR | S_IRUSR |  IPC_CREAT )
 	 or die sprintf ( "cant create server mq using token >0x%08x< ", $ftok_server ); 
@@ -38,4 +41,15 @@ while (1) {
 
 }
 
+exit 1;
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+sub my_realpath {
+  my $p = shift ;
+  my $pwd = `pwd`;
+  chomp $pwd;
+  return sprintf ( "%s/%s", $pwd, $p );
+
+}

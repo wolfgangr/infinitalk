@@ -33,7 +33,7 @@ use Cwd qw( realpath );
 
 #---- config -------------
 
-our $Debug = 2;
+our $Debug = 4;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -52,6 +52,7 @@ our $status_rrd = "$rrddir/status.rrd";
 
 our $RETRY_on_infini_err = 3 ;
 our $Usleep_between_cmd = 1e5 ; 
+our $Repeat_mq_cmds = 5 ; # mq priority, may cause DOS vulnerability
 
 
 # ------ protocol definition ----- 
@@ -141,11 +142,16 @@ while (1) {
 	# last;
   }
  
-  unless (mq_processor() ) {
-	debug_print (1, "shitt happened processing mq_processor\n");
-        last;
-  }
+  # unless (mq_processor() ) {
+  #	debug_print (1, "shitt happened processing mq_processor\n");
+  #      last;
+  #}
 
+  usleep $Usleep_between_cmd ;
+
+  for my $i (1 .. $Repeat_mq_cmds) {
+  	  last  unless (mq_processor()) ;
+  }
 
   # sleep 1;
   usleep $Usleep_between_cmd ;
@@ -171,7 +177,9 @@ sub mq_processor {
   # return undef ;
   my $buf;
   $mq_my->rcv($buf, 256, 1, IPC_NOWAIT );
-  if ($buf) {
+  unless ($buf) {
+	  return 0 ; # suppose empty queue
+  } else {
     debug_printf (4, "message: %s,", $buf) ;
     # 0xclid:0xtimestamp:cmd:cnt
     my ($x_client_key, $c_ts, $cmd, $cnt) = $buf  =~
@@ -232,6 +240,7 @@ sub mq_processor {
 
     } else {
        debug_printf (2, " - unparseable mq request %s\n", $buf);
+       return 0;
     }
   }
   return 1;

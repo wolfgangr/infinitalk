@@ -14,7 +14,7 @@ use 5.010;
 
 use Data::Dumper qw(Dumper) ;
 use Digest::CRC () ;
-# use DateTime();
+use DateTime();
 use DateTime::Format::Strptime();
 our $my_infini_strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
 
@@ -33,7 +33,7 @@ use Cwd qw( realpath );
 
 #---- config -------------
 
-our $Debug = 4;
+our $Debug = 2;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -49,6 +49,8 @@ our @extra_stats = qw (T MOD WS); # commands to retrieved for status not include
 our $rrddir= '.';
 our $infini_rrd = "$rrddir/infini.rrd";
 our $status_rrd = "$rrddir/status.rrd";
+
+our $status_changed_log = "/var/log/wrosner/infini-status.log";
 
 our $RETRY_on_infini_err = 3 ;
 our $Usleep_between_cmd = 1e5 ; 
@@ -118,8 +120,14 @@ our %mq_clientlist =();
 
 # ----------------------------
 
-open ( my $INFINI,  "+<", $infini_device ) or die "canot open $infini_device : $!";
+open ( our  $INFINI,  "+<", $infini_device ) or die "canot open $infini_device : $!";
+
 $/ = "\r" ; # change line terminator
+
+# open ( our $STATLOG,  '>', $status_changed_log ) or die "canot open $status_changed_log : $!";
+# $| = 1;     # autoflush
+# print $STATLOG "foo bar tralala \n";
+
 
 # ========= main scheduler loop =============
 
@@ -368,6 +376,27 @@ sub stat_iterator {
     RRDs::update($status_rrd,  '--template', 
 	    'inv_day:work_mode:pow_status:warn_status',  $valstr2 );
     debug_rrd (3,5, RRDs::error );
+
+    # keep a canonical representation
+    state $oldstate = "##,####,######" ;
+    my $newstate = sprintf "%02x,%04x,%06x", $wm , $ps_2bits, $ws_bits ;
+    unless ( $oldstate eq $newstate ) {
+      # get human readable time
+      # my $now_dt = DateTime->now;
+      my $now_str =  DateTime->now->strftime('%F %T'); 
+      my $logstring = sprintf ("%s - status chaged old->new:%s:%s",
+             $now_str, $oldstate , $newstate);
+      debug_print (4, $logstring , "\n") ;
+      # die "DEBUG";
+      # print to some log file
+      # weird ? why can`I print any more???
+      # print $STATLOG ($logstring, "\n");
+      `echo '$logstring' >> $status_changed_log `;
+
+      $oldstate = $newstate;    
+    }
+
+    # }
 
     # %res=();
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

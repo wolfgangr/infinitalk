@@ -33,7 +33,7 @@ use Cwd qw( realpath );
 
 #---- config -------------
 
-our $Debug = 4;
+our $Debug = 2;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";

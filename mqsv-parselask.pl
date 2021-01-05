@@ -45,10 +45,12 @@ do {
   $mq_srv->snd (1, $msg );
   print " ... done \n";
 
-  sleep 1;
+  # sleep 1;
 
   my $buf;
-  $mq_my->rcv($buf, 256, 1 , IPC_NOWAIT  );
+
+  # quickly poll mq
+  do { } until ($mq_my->rcv($buf, 1024, 1 , IPC_NOWAIT  )) ;
 
   print $buf , "\n" if $buf  ;
 

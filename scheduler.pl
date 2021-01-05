@@ -33,7 +33,7 @@ use Cwd qw( realpath );
 
 #---- config -------------
 
-our $Debug = 2;
+our $Debug = 4;
 
 our $infini_device="../dev_infini_serial" ;
 our $tempdir = "./tmp";
@@ -360,10 +360,10 @@ sub stat_iterator {
     # work mode: int 0 ... 6
     my $wm = $res{'MOD'}[2][0] ;
     # N inv_min work_mode , pow_status  warn_status 
-    debug_printf (6, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
+    debug_printf (4, "datetime %s\ , power status 0x%04x , warn status bits: 0x%06x , work mode: %d\n" ,
 	    $i_rrdt  , $ps_2bits, $ws_bits , $wm ); 
 
-    my $valstr2 = join(':', ('N', $i_rrdt  , $ps_2bits, $ws_bits , $wm ));
+    my $valstr2 = join(':', ('N', $i_rrdt  ,  $wm , $ps_2bits, $ws_bits  ));
     debug_printf (4, "values_2 %s\n", $valstr2 );
     RRDs::update($status_rrd,  '--template', 
 	    'inv_day:work_mode:pow_status:warn_status',  $valstr2 );

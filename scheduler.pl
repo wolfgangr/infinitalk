@@ -137,15 +137,18 @@ while (1) {
   # sleep 1;
   usleep $Usleep_between_cmd ;
 
+  for my $i (1 .. $Repeat_mq_cmds) {
+          last  unless (mq_processor()) ;
+  }
+
+  usleep $Usleep_between_cmd ;
+
+
   unless (coll_iterator() ) {
         debug_print (1, "shitt happened processing coll_iterator\n");
 	# last;
   }
  
-  # unless (mq_processor() ) {
-  #	debug_print (1, "shitt happened processing mq_processor\n");
-  #      last;
-  #}
 
   usleep $Usleep_between_cmd ;
 
@@ -153,7 +156,6 @@ while (1) {
   	  last  unless (mq_processor()) ;
   }
 
-  # sleep 1;
   usleep $Usleep_between_cmd ;
 
   # last if (happens(shit));

@@ -6,7 +6,7 @@ use warnings;
 use IPC::SysV qw(IPC_PRIVATE S_IRUSR S_IWUSR ftok IPC_CREAT IPC_NOWAIT );
 use IPC::Msg();
 use Cwd qw( realpath );
-use Time::HiRes () ;
+use Time::HiRes qw( usleep ) ;
 use Digest::CRC qw(crc) ;
 
 # -- process command line args
@@ -21,7 +21,10 @@ if ($#ARGV == 0) {
 	die "usage: $0 [cmd = S|P] [content] ";
 }
 
-# -- mq configuration 
+# -- mq configuration
+
+my $poll_intvl = 2e5 ; # polling interval in microseconds
+
 my $ftokid = 1;
 my $server = './scheduler.pl';
 my $ftok_server = ftok ( realpath ($server) );
@@ -50,9 +53,11 @@ do {
   my $buf;
 
   # quickly poll mq
-  do { } until ($mq_my->rcv($buf, 1024, 1 , IPC_NOWAIT  )) ;
-
-  print $buf , "\n" if $buf  ;
+  my $i =0;
+  do { usleep $poll_intvl ; $i++ } 
+  	until ($mq_my->rcv($buf, 1024, 1 , IPC_NOWAIT  )) ;
+  
+  printf "polls: %d - result: %s \n ", $i, $buf   ;
 
   # sleep 4;
 

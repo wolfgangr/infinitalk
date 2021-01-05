@@ -194,7 +194,12 @@ sub mq_processor {
 	    	  $mq_cli  ? 'succeeded' : 'failed' ) ;
        }
 
+       # if we either have or can create a client answer queue
        if ( $mq_cli ) {
+	  my $qry = compose_qry ($cnt , $cmd);
+	  debug_printf (3, "\t\tcontent %s , cmd %s -> query %s \n", $cnt , $cmd , $qry );
+          my $rsp = call_infini_raw($qry);
+	  debug_printf (3, "\t\tresponse %s \n", $rsp );
        }
 
 

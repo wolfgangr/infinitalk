@@ -11,7 +11,7 @@ UPDLOG='/var/log/wrosner/infini_scheduler.log'
 
 # uncomment this 2 line for debug
 # echo -n "chargery rrd watchdog entered " >> $LOGFILE
-# date >> $LOGFILE
+date >> $LOGFILE
 
 
 # exit - nothing to do if rrdtest reports success
@@ -20,7 +20,6 @@ STATUS=${PIPESTATUS[0]}
 if [ $STATUS -eq 0 ] ; then
 	exit
 fi
-
 
 
 echo -n "infini rrd watchdog triggered at " >> $LOGFILE
@@ -36,4 +35,5 @@ sleep 1
 $PRESTARTER  >> $LOGFILE 2>&1
 ./scheduler.pl  >> $UPDLOG 2>&1   &
 
-
+echo -n "----- done -----  " >> $LOGFILE
+date >> $LOGFILE

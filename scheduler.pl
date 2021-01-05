@@ -220,10 +220,13 @@ sub mq_processor {
 
 	  # response format:
 	  # 0xyour_ts:0xmy_ts:infiny-qry:flag:trail:crc:payload
-	  my $mq_answer = sprintf ("%s:%08x:%02x:^%s%03d:%02x:%s",
+	  my $mq_answer = sprintf ("%s:%08x:%02x:^%s%03d:%04x:%s",
 	 	$c_ts, $s_ts, $flag, $label, $len , $num_crc , $payload  ); 
 	  # my $mq_answer = join ( ':', ( $c_ts, $s_ts, $flag, ('^' . $label. $len) , $crc, $payload ) ) ;
-          debug_printf (4, "\tanswer: %s\n", $mq_answer); 	 
+          debug_printf (4, "\tanswer: %s\n", $mq_answer); 
+
+          # and return the answer to the client
+	  $mq_cli->snd (1, $mq_answer); 	  
        }
 
 

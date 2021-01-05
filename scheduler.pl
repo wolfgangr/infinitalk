@@ -531,10 +531,28 @@ sub checkstring {
 }
 
 # wrapper 
+#sub my_crc {
+#  my $arg = shift;
+#  return Digest::CRC::crc($arg, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
+#}
+
+# replace reserved characters in CRC
+#
+# sub infini_crc_hack {
 sub my_crc {
-  my $arg = shift;
-  return Digest::CRC::crc($arg, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
+  my $in = shift;
+  my $dg = Digest::CRC::crc($in, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
+  return infini_crc_byte_hacker ($dg & 0xff)
+    + 0x100 * (infini_crc_byte_hacker ( int ($dg / 0x100 ))) ;
 }
+
+sub infini_crc_byte_hacker {
+  $b = shift;
+  return $b unless ( $b == 0x0d or $b == 0x28 or $b == 0x0a );
+  return $b+1 ;
+
+}
+
 
 # $bitmap = bitmapize (@flags)
 sub bitmapize {

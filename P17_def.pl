@@ -253,10 +253,11 @@ $p17{'FPADJ'} = {
 	factors=>[ ( undef , 1) x 4 ] ,
 } ;
 
-# I get CRC errors here - screw my whole script - throw this ou5
+# I get CRC errors here - screw my whole script - throw this out
+# ... back again, since infini crc hack solved
 $p17{'GOV'} = {
         tag=>'AC input voltage acceptable range for feed power',
-        use=>{  } ,
+        use=>{ conf2=>1 } ,
 	fields=>[ 'highest voltage', 'lowest voltage', 
 		'highest back voltage', 'lowest back voltage' ],  
 	units=>[   ( 'V' ) x 4 ] ,

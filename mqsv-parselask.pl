@@ -59,8 +59,13 @@ do {
   
   printf "polls: %d - result: %s \n ", $i, $buf   ;
 
-  # sleep 4;
-
+  # crc debugging
+  if (1) {
+    my ($c_ts, $s_ts, $flag, $head , $x_crc , $payload) = split ':', $buf ;
+    my $barersp = sprintf "%s%s", $head , $payload;
+    my $digest = crc($barersp, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
+    printf "bare response:    %s    - digest: 0x%04x - their CRC: 0x%s \n", $barersp , $digest, $x_crc ;
+  }
 
 } until (1);  # yes, this was a loop tester before
 

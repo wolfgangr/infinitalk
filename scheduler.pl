@@ -13,7 +13,7 @@ use warnings;
 use 5.010;
 
 use Data::Dumper qw(Dumper) ;
-use Digest::CRC qw(crc) ;
+use Digest::CRC () ;
 # use DateTime();
 use DateTime::Format::Strptime();
 our $my_infini_strp = DateTime::Format::Strptime->new( pattern  => '%Y%m%d%H%M');
@@ -455,11 +455,18 @@ sub checkstring {
 
   return (0) if ( length($resp)-5-$len ) ;
 
-  my $digest = crc($resp1, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1); 
+  # my $digest = Digest::CRC::crc($resp1, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1); 
+  my $digest = my_crc ($resp1);
   return (0) unless $digest == unpack ('n', $crc  )  ;
 
   my @data = split(',', $payload);
   return ($label, $len,  \@data  );
+}
+
+# wrapper 
+sub my_crc {
+  my $arg = shift;
+  return Digest::CRC::crc($arg, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
 }
 
 # $bitmap = bitmapize (@flags)

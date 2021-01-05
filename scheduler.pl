@@ -172,34 +172,58 @@ sub mq_processor {
   my $buf;
   $mq_my->rcv($buf, 256, 1, IPC_NOWAIT );
   if ($buf) {
-    debug_printf (3, "message: %s,", $buf) ;
+    debug_printf (4, "message: %s,", $buf) ;
     # 0xclid:0xtimestamp:cmd:cnt
     my ($x_client_key, $c_ts, $cmd, $cnt) = $buf  =~
         /^([0-9a-fA-F]{8})\:([0-9a-fA-F]{8})\:([^\:]*)\:([^\:]*)$/ ;
     if ($cnt) {
-       debug_printf (3, "  clid=%s,  c_ts=%s,  cmd=%s,  cnt=%s \n", 
+       debug_printf (4, "  clid=%s,  c_ts=%s,  cmd=%s,  cnt=%s \n", 
 	       $x_client_key, $c_ts, $cmd, $cnt );
        # check in list of known clients
        my $mq_cli = $mq_clientlist{$x_client_key} ;
        unless ( $mq_cli ) {
           my $client_key = hex ( $x_client_key ); # num from hex
-          debug_printf (3, " , dec %d, hex 0x%08x    ", ($client_key) x2 ) ;
+          debug_printf (4, " , dec %d, hex 0x%08x    ", ($client_key) x2 ) ;
 
 	  # try to assign a client mq
           $mq_cli = $mq_clientlist{$x_client_key}  #   =
       		# = IPC::Msg->new(  $client_key  , S_IRUSR | S_IWUSR | IPC_CREAT ) ;
 		= IPC::Msg->new(  $client_key  , 0) ;
 
-          debug_printf(3, " opening queue for client 0x%08x %s \n", $client_key, 
+          debug_printf(4, " opening queue for client 0x%08x %s \n", $client_key, 
 	    	  $mq_cli  ? 'succeeded' : 'failed' ) ;
        }
 
        # if we either have or can create a client answer queue
        if ( $mq_cli ) {
+	  # retrieve response from gadget
 	  my $qry = compose_qry ($cnt , $cmd);
-	  debug_printf (3, "\t\tcontent %s , cmd %s -> query %s \n", $cnt , $cmd , $qry );
-          my $rsp = call_infini_raw($qry);
-	  debug_printf (3, "\t\tresponse %s \n", $rsp );
+	  debug_printf (4, "\t\tcontent %s , cmd %s -> query %s \n", $cnt , $cmd , $qry );
+          my $resp = call_infini_raw($qry);
+	  my $s_ts = (int (Time::HiRes::time * 1000)) & 0xffffffff ;
+
+	  debug_printf (4, "\t\tresponse %s , at ts: 0x%08x \n", $resp , $s_ts);
+
+          my $resp1 = substr ($resp , 0,-3  );
+          my $crc = substr ($resp , -3,2  );
+	  
+	  # bit0 = format error, bit1 = length mismatch, bit3 = crc mismatch
+	  my $flag = 0; 
+          my ($label, $len, $payload) =  ( $resp1 =~ /\^(\w)(\d{3})(.*)$/ )  ;
+	  unless (defined ($payload) )	{  $flag |= 1 ;	  }
+
+	  $flag |= 2 if ( length($resp)-5-$len ) ;
+
+	  my $digest = my_crc ($resp1);
+	  my $num_crc = unpack ('n', $crc  );
+	  $flag |= 4 unless $digest == $num_crc;
+
+	  # response format:
+	  # 0xyour_ts:0xmy_ts:infiny-qry:flag:trail:crc:payload
+	  my $mq_answer = sprintf ("%s:%08x:%02x:^%s%03d:%02x:%s",
+	 	$c_ts, $s_ts, $flag, $label, $len , $num_crc , $payload  ); 
+	  # my $mq_answer = join ( ':', ( $c_ts, $s_ts, $flag, ('^' . $label. $len) , $crc, $payload ) ) ;
+          debug_printf (4, "\tanswer: %s\n", $mq_answer); 	 
        }
 
 

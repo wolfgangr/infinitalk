@@ -64,7 +64,9 @@ do {
     my ($c_ts, $s_ts, $flag, $head , $x_crc , $payload) = split ':', $buf ;
     my $barersp = sprintf "%s%s", $head , $payload;
     my $digest = crc($barersp, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
-    printf "bare response:    %s    - digest: 0x%04x - their CRC: 0x%s \n", $barersp , $digest, $x_crc ;
+    my $s_dgst = simple_crc($barersp);
+    printf "bare response:    %s    - digest: 0x%04x - infini CRC: 0x%s - simple_crc: 0x%04x \n",
+   	 $barersp , $digest, $x_crc , $s_dgst ;
   }
 
 } until (1);  # yes, this was a loop tester before
@@ -74,3 +76,13 @@ exit 1;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+sub simple_crc {
+  my $pl = shift ;
+  my $rv = 0;
+  # my $char '';
+  # while ($schar, $pl) = split( undef, $pl, 2) {
+  for my $i ( 0 .. length ($pl)-1 ) {
+    $rv += ord ( substr $pl, $i, 1);
+  }
+  return $rv & 0xffff ;
+}

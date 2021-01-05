@@ -65,8 +65,9 @@ do {
     my $barersp = sprintf "%s%s", $head , $payload;
     my $digest = crc($barersp, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
     my $s_dgst = simple_crc($barersp);
-    printf "bare response:    %s    - digest: 0x%04x - infini CRC: 0x%s - simple_crc: 0x%04x \n",
-   	 $barersp , $digest, $x_crc , $s_dgst ;
+    my $infini_hack = infini_crc_hack($barersp);
+    printf "bare response:    %s    - digest: 0x%04x - infini CRC: 0x%s - infini-hack-crc: 0x%04x \n",
+   	 $barersp , $digest, $x_crc , $infini_hack ;
   }
 
 } until (1);  # yes, this was a loop tester before
@@ -74,6 +75,24 @@ do {
 exit 1;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# replace reserved characters in CRC
+#
+sub infini_crc_hack {
+  my $in = shift;
+  my $dg = crc($in, 16, 0x0000, 0x0000, 0 , 0x1021, 0, 1);
+  return infini_crc_byte_hacker ($dg & 0xff) 
+    + 0x100 * (infini_crc_byte_hacker ( int ($dg / 0x100 ))) ;
+}
+
+sub infini_crc_byte_hacker {
+  $b = shift;
+  return $b unless ( $b == 0x0d or $b == 0x28 or $b == 0x0a );
+  return $b+1 ;
+ 
+}
+
+
 
 
 sub simple_crc {

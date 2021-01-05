@@ -13,6 +13,8 @@ use warnings;
 use 5.010;
 
 use Data::Dumper qw(Dumper) ;
+use Scalar::Util qw ( looks_like_number );
+
 use Digest::CRC () ;
 use DateTime();
 use DateTime::Format::Strptime();
@@ -324,11 +326,21 @@ sub stat_iterator {
     } @rrd_def ;
 
 
-    debug_dumper ( 6, \@vals );
-    my $valstr = join(':', 'N', @vals );
+    # sometimes we have all empty vals
+    if (  scalar  ( grep {  looks_like_number($_)  } @vals   ) < 20    ) {
+       #
+       debug_dumper ( 2, \@vals );
+       debug_print (2, "skipping empty value set\n"); 
+       $retries = 0;
+       $s_counter = 0;
+       return(0);
+    }
+
+
+    my $valstr = join(':', ('N', @vals) );
     debug_print (4, "values: $valstr  \n");
     RRDs::update($infini_rrd, '--template', $rrd_stat_tpl, $valstr);
-    debug_rrd (3,5, RRDs::error );
+    debug_rrd (2,5, RRDs::error );
 
     # status_rrd:
     # inv_day: unixtime %s /  (24*60*60) i.e. fractional days since epoc
@@ -375,7 +387,7 @@ sub stat_iterator {
     debug_printf (4, "values_2 %s\n", $valstr2 );
     RRDs::update($status_rrd,  '--template', 
 	    'inv_day:work_mode:pow_status:warn_status',  $valstr2 );
-    debug_rrd (3,5, RRDs::error );
+    debug_rrd (2,5, RRDs::error );
 
     # keep a canonical representation
     state $oldstate = "##,####,######" ;

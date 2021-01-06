@@ -355,7 +355,7 @@ $p17{'BATS'} = {
   [ P_ACoutS,    PS, 9, 0, 5000 ],
   [ P_ACoutT,    PS, 10, 0, 5000 ],
   [ P_ACoutSum,  PS, 11, 0, 15000 ],
-  [ P_ACoutPerc, PS, 12, 0, 110 ],
+  [ P_ACoutPerc, PS, 16, 0, 110 ],
 
   [ P_EM_feed_def  , EMINFO , 2, 0, 15000 ],
   [ P_EM_PV_act    , EMINFO , 3, 0, 15000 ],

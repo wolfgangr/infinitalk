@@ -27,7 +27,7 @@
 #  our %p17;
 #  require ('./P17_def.pl');
 
-
+use utf8;
 
 our %p17 = ();
 

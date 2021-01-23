@@ -80,7 +80,20 @@ for my $sfh (values %status ) {
 
 # ~~~~~~~~~~~~ generate HTML ~~~~~~~~~
 
-# my $q = CGI->new;
+my $q = CGI->new;
+my $myself = $q->self_url;
+
+# create a navigation link jumper bar
+my $navbar ="\n". '<p><table border="0" width="100%" bgcolor="#aaaaaa" ><tr>' ." \n";
+
+for my $sf ( sort keys %status  ) {
+	$navbar .= '<td align="center">';
+	$navbar .= sprintf '<a href="%s#%s">&nbsp;%s&nbsp;</a>', $myself , $sf, 
+		$sf ;
+	$navbar .= '</td>';
+
+}
+$navbar .= "\n</tr></table>\n";
 
 print CGI::header();
 print CGI::start_html(-title => $title);
@@ -93,12 +106,20 @@ print CGI::h3($title);
 
 for my $sf ( sort keys %status  ) {
 	my %statgrp = %{ $status{ $sf } } ;
-	print "<br><hr><br>\n" ;
+	print "<br><br>\n" ;
+	printf '<a name="%s">', $sf;
+	print $navbar ;
+	print "</a>\n" ;
+	# printf '<a name="%s">', $sf;
 	print CGI::h3( '# ' .   $sf );
+	# printf '<a name="%s">', $sf;
 	print  $statgrp{ path }  ; 
-	
+	print "<hr>\n" ;
+	# print $navbar ; 	
+
 	my %merged = %{ $statgrp{ merged } };
 	for my $rt ( sort keys %merged  ) {
+		# print $navbar ;
 		my %reg = %{ $merged{ $rt } };
 		print CGI::h4 ( sprintf "Register %s: '%s'",  $rt, $reg{ tag  }    );
 		# my %reg = %{ $merged{ $reg } };
@@ -108,7 +129,7 @@ for my $sf ( sort keys %status  ) {
 
 		print '<tr bgcolor="#dddddd" >';
 		for my $i (0 .. $#{$reg{fields}} ) {
-			my $tif = '<td colspan ="2"  align="center" valign="bottom" >%s</t>';
+			my $tif = '<td colspan ="2"  align="center" valign="bottom" >%s</td>';
 			printf  $tif ,  $reg{fields}->[ $i ] ;
 			# printf  $tif ,  $reg{scaled_vals}->[ $i ] ;
 		}
@@ -117,10 +138,10 @@ for my $sf ( sort keys %status  ) {
 
 		for my $i (0 .. $#{$reg{fields}} ) {
 			# my $tif = "<td>%s</t>";
-			printf  '<td align="right"><b>%s&nbsp;</b> </t>' ,  
+			printf  '<td align="right"><b>%s&nbsp;</b> </td>' ,  
 				$reg{scaled_vals}->[ $i ] ;	
 				
-			printf  '<td align="left">&nbsp;%s</t>' ,  
+			printf  '<td align="left">&nbsp;%s</td>' ,  
 				$reg{units}->[ $i ] || '' ; # if defined $reg{units}->[ $i ] ;
 			# printf  $tif ,  $reg{fields}->[ $i ] ;
 		}

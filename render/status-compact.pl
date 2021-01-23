@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 # simple web render of infini status caches in tmp/*.bck
+# ://kellerkind.rosner.lokal/pl_cgi/infini-render/status-compact.pl?select=em#stat
 
 use strict;
 use warnings;
@@ -23,7 +24,7 @@ require '../P17_def.pl' ;
 #~~~~~~~~ end of config ~~~~~
 
 my $q = CGI->new;
-my $myself = $q->self_url;
+# my $myself = $q->self_url;
 
 
 my $tp_now = Time::Piece->new() ;
@@ -98,18 +99,45 @@ for my $sfh (values %status ) {
 # ~~~~~~~~~~~~ generate HTML ~~~~~~~~~
 
 # my $q = CGI->new;
-# my $myself = $q->self_url;
+my $myself = $q->self_url;
+my $myself_nqry = $q->url(-relative => 1 );
 
 # create a navigation link jumper bar
 my $navbar ="\n". '<p><table border="0" width="100%" bgcolor="#aaaaaa" ><tr>' ." \n";
 
-for my $sf ( @all_file_tags  ) {
-	$navbar .= '<td align="center">';
-	$navbar .= sprintf '<a href="%s#%s">&nbsp;%s&nbsp;</a>', $myself , $sf, 
-		$sf ;
-	$navbar .= '</td>';
+# $navbar .= '<td align="center"bgcolor="#ffffff">';
+# $navbar .= sprintf '&nbsp;<a href="%s">reload</a>&nbsp;', $myself ;
+# $navbar .= '</td>';
 
+$navbar .= sprintf'<form action="%s" method="get">', $myself_nqry ;
+
+$navbar .= '<td align="center" bgcolor="#ffffff">';
+$navbar .= sprintf '&nbsp;<a href="%s">show all</a>&nbsp;', $myself_nqry ;
+$navbar .= '</td>';
+
+$navbar .= '<td align="center" bgcolor="#ffffff">';
+$navbar .= '<input type="submit" value="reload">' ;
+$navbar .= '</td>';
+
+for my $sf ( @all_file_tags  ) {
+   if (defined $status{ $sf } ) {
+	$navbar .= '<td align="center">';
+	# $navbar .= sprintf '<input type="checkbox" name="select" value="%s" checked>', $sf;
+	$navbar .= sprintf ' scroll <a href="%s#%s">%s</a>&nbsp;', $myself , $sf, 
+		$sf ;
+	$navbar .= sprintf '<input type="checkbox" name="select" value="%s" checked>', $sf;
+	$navbar .= '</td>';
+   } else {
+	$navbar .= '<td align="center" bgcolor="#e0e0e0">';
+	# $navbar .= sprintf '<input type="checkbox" name="select" value="%s">', $sf;
+	$navbar .= sprintf ' load <a href="%s?select=%s">%s</a>&nbsp;', $myself_nqry  , $sf,
+		$sf ;
+	$navbar .= sprintf '<input type="checkbox" name="select" value="%s">', $sf;
+	$navbar .= '</td>';
+   }
 }
+$navbar .= '</form>';
+
 $navbar .= "\n</tr></table>\n";
 
 print CGI::header();

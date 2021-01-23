@@ -45,7 +45,8 @@ while (<$LOG>) {
 
 	next unless ( (scalar @fields) == 3) ;
 	my $dt_line = Time::Piece->strptime(    $fields[0] , $dt_format   ) ;
-	print " line date is " . $dt_line->datetime .' -> '. $dt_line->epoch ."\n";
+	my $dt_epoc = $dt_line->epoch ;
+	print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
 	# comparations to go here ======================= TODO
 
 	# my $newstate = sprintf "%02x,%04x,%06x", $wm , $ps_2bits, $ws_bits ;
@@ -56,20 +57,31 @@ while (<$LOG>) {
 	print Dumper ( @fields, @chunks) ;
 	print Dumper ($wm, $ps_2bits, $ws_bits );
 
-	my $ps_2b_x = hex ($ps_2bits);
+	my $ps_2b_x = hex $ps_2bits;
 	# printf ($ps_2b_x
 	my @ps;
 	for (0 .. 7) {
-		unshift @ps, ( $ps_2b_x & 0x3 ) ;
+		unshift @ps, ( $ps_2b_x & 0x03 ) ;
 		$ps_2b_x >>= 2;
 	}
+	print Dumper (@ps);
 
-	print Dumper (@ps );
+	my $ws_x = hex  $ws_bits ;
+	my @ws;
+	for (0 .. 21) {
+		unshift @ws , ( $ws_x & 0x01 );
+		$ws_x >>= 1;
+	}
+	print Dumper (@ws);
 
+	my $mr_ps = join ',' , @ps;
+	my $mr_ws = join ',' , @ws;
+	my $mr_rv = join ';', $dt_epoc, $wm, $mr_ws, $mr_ps   ; 
 
+	print "machine readable line : " . $mr_rv . "\n";
 	# print Dumper ( $dt_line );
 	# print $dt_line->datetime;
-	last;
+	# last;
 	#===============================
 }
 close $LOG ;

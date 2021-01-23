@@ -103,24 +103,38 @@ for my $sf ( sort keys %status  ) {
 		print CGI::h4 ( sprintf "Register %s: '%s'",  $rt, $reg{ tag  }    );
 		# my %reg = %{ $merged{ $reg } };
 
-		print "<table>";
+		# print '<table border="1">';
+		print '<table bgcolor="#aaaaaa">';
+
+		print '<tr bgcolor="#dddddd" >';
 		for my $i (0 .. $#{$reg{fields}} ) {
-			print "<tr>";
-			my $tif = "<td> &nbsp; %s &nbsp; </t>";
-			printf  $tif ,  $reg{scaled_vals}->[ $i ] ;
-			printf  $tif ,  $reg{units}->[ $i ] || '' ; # if defined $reg{units}->[ $i ] ;
+			my $tif = '<td colspan ="2"  align="center" valign="bottom" >%s</t>';
 			printf  $tif ,  $reg{fields}->[ $i ] ;
-			print "</tr>";
+			# printf  $tif ,  $reg{scaled_vals}->[ $i ] ;
 		}
+		
+		print "</tr>\n<tr bgcolor=\"#eeeeee\" >";
+
+		for my $i (0 .. $#{$reg{fields}} ) {
+			# my $tif = "<td>%s</t>";
+			printf  '<td align="right"><b>%s&nbsp;</b> </t>' ,  
+				$reg{scaled_vals}->[ $i ] ;	
+				
+			printf  '<td align="left">&nbsp;%s</t>' ,  
+				$reg{units}->[ $i ] || '' ; # if defined $reg{units}->[ $i ] ;
+			# printf  $tif ,  $reg{fields}->[ $i ] ;
+		}
+		print "</tr>";
+
 		print "</table>";
-		print "<br>\n";
+		print "\n";
 	}
 
 	print "<br>\n";
 }
 
 #------------------------------------------------
-got ENDOFDEBUG;
+goto ENDOFDEBUG;
 print "<br><hr>\n" ;
 print CGI::h3('Debug:');
 print "<pre>";

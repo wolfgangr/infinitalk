@@ -107,13 +107,19 @@ print CGI::h3($title);
 for my $sf ( sort keys %status  ) {
 	my %statgrp = %{ $status{ $sf } } ;
 	print "<br><br>\n" ;
+
 	printf '<a name="%s">', $sf;
 	print $navbar ;
 	print "</a>\n" ;
-	# printf '<a name="%s">', $sf;
+
 	print CGI::h3( '# ' .   $sf );
-	# printf '<a name="%s">', $sf;
-	print  $statgrp{ path }  ; 
+
+	print  $statgrp{ path }  ;
+	my $tp_stat = Time::Piece->new( $statgrp{ upd_t } );
+	my $elapsed =  $tp_now->epoch - $tp_stat->epoch ;
+
+	printf " - modified: %s - age:%d sec\n" , $tp_stat->strftime($dtformat) , $elapsed  ;
+
 	print "<hr>\n" ;
 	# print $navbar ; 	
 

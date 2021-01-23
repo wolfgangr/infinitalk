@@ -16,6 +16,7 @@ my $dtformat = '%F - %T' ;
 my $title = "Infini status";
 my $status_files = `ls -1 ~wrosner/infini/parsel/tmp/*.bck` ;
 
+# expansion of protocol 
 our %p17 = ();
 require '../P17_def.pl' ;
 
@@ -40,10 +41,32 @@ for my $sfh (values %status ) {
 	next unless $sfh->{ exists } = -e $sfh->{  path }  ;
 	# $sfh->{ kilroy } = 'was here' ;
 	# content
-	$sfh->{ ihash } = Storable::lock_retrieve( $sfh->{  path } );
+	$sfh->{ hash } = Storable::lock_retrieve( $sfh->{  path } );
 	# update time
 	$sfh->{ upd_t } = (stat( $sfh->{  path }   ))[9];
 	$sfh->{ read } = 1 ;
+}
+
+# merge the labelling into the hash
+#	e.g.:
+#   'GOV' => { 'use' => {  'conf2' => 1   },
+#              'tag' => 'AC input voltage acceptable range for feed power'
+#           'fields' => [ 'highest voltage',  'lowest voltage', .. , ..  ],
+#           'units'  => [ 'V',   'V',    'V',   'V'    ],
+#          'factors' => [ '0.1',  '0.1',  '0.1', '0.1'   ],  # optional
+#    },
+
+
+for my $sfh (values %status ) {
+    	my %strh ; # where we collect a string info tree per state file
+    	my $infini_reg = $sfh->{ hash }; # the raw stuff we got from file
+    	for my $cmd (keys %{$infini_reg} ) {
+		# my $data_aryp = $$infini_reg{ $cmd }[2];
+		# my %cmd_strh = ( cmd => $cmd , 	p17 => $p17{ $cmd } , ) ;
+		$strh{ $cmd } = $p17{ $cmd } ;
+		$strh{ $cmd }->{data} = $$infini_reg{ $cmd }[2];
+    	}
+    	$sfh->{ strh } = \%strh ; 	
 }
 
 # ~~~~~~~~~~~~ generate HTML ~~~~~~~~~

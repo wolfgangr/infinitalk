@@ -140,12 +140,12 @@ for my $sf ( sort keys %status  ) {
 			# printf  $tif ,  $reg{scaled_vals}->[ $i ] ;
 		}
 		
-		print "</tr>\n<tr bgcolor=\"#eeeeee\" >";
+		print "</tr>\n<tr>";
 
 		for my $i (0 .. $#{$reg{fields}} ) {
 			# my $tif = "<td>%s</t>";
 			my $value = $reg{scaled_vals}->[ $i ]  ;
-			printf  '<td align="right"><b>%s&nbsp;</b> </td>' ,  
+			printf  '<td align="right" bgcolor="#ffffff" ><b>&nbsp;%s&nbsp;</b> </td>' ,  
 				(defined  $value ) ? $value : '####'  ;
 
 			# $reg{scaled_vals}->[ $i ] ;	
@@ -154,7 +154,7 @@ for my $sf ( sort keys %status  ) {
 			if ( (defined $value) and  $reg{enums}->[ $i ] and (my $enum = $reg{enums}->[ $i ][$value ] ) )
 				{ $units = $enum } # enum wins
 
-			printf  '<td align="left">&nbsp;%s</td>' , $units ;
+			printf  '<td align="left" bgcolor="#e0e0e0" >&nbsp;%s&nbsp;</td>' , $units ;
 				#$reg{units}->[ $i ] || '' ; # if defined $reg{units}->[ $i ] ;
 				
 			# printf  $tif ,  $reg{fields}->[ $i ] ;

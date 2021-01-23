@@ -45,7 +45,10 @@ while (<$LOG>) {
 
 	next unless ( (scalar @fields) == 3) ;
 	my $dt_line = Time::Piece->strptime(    $fields[0] , $dt_format   ) ;
-	my $dt_epoc = $dt_line->epoch ;
+
+	# select time interval
+	next if ( (my $dt_epoc = $dt_line->epoch ) < $epc_from ) ;
+	last if ( (my $dt_epoc = $dt_line->epoch ) > $epc_until ) ;
 	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
 	# comparations to go here ======================= TODO
 

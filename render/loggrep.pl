@@ -25,13 +25,16 @@ print $q->header(-type => 'text/plain' ,
 
 my $from  = $q->param('from' );
 my $until = $q->param('until');
+my $dt_from  = Time::Piece->new( $from  );
+my $dt_until = Time::Piece->new( $until );
+my $epc_from  = $dt_from->epoch ;
+my $epc_until = $dt_until->epoch ;
 
-# print $q->header(-type => 'text/cs',
-# 		-title => 'infini log file export',
-# 		-encoding => 'utf8' 
-# );
-# print $q->header(-type => 'text/csv');
-print $q->header(-type => 'text/plain'); 
+print "from: $from  ->  $dt_from  ->  $epc_from \n";
+print "until $until  ->  $dt_until  ->  $epc_until \n";
+
+
+
 
 open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!"; 
 
@@ -57,25 +60,4 @@ print "~~~~~~~~~~~~~<br><hr>END\n";
 exit;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# debug with continued laoding
-sub debug {
-  # my $in = shift;
-  print
-    "\n<pre><code>\n",
-    Dumper(@_);
-    "\</code></pre>\n",
-  ;
-}
 
-
-# final die like debug
-sub DEBUG {
-    # my $in = shift;
-    print CGI::header;
-    print CGI::start_html('### DEBUG ###');
-    debug ( @_  ) ;
-    print CGI::end_html;
-  ;
-  exit; # if we prefer not to clobber the log file
-  # die " ============ hit the wall ========= ";
-}

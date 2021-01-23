@@ -93,7 +93,7 @@ $p17{'PIRI'} = {
 	units=>[ qw ( V Hz A V A A V) ], 
 	factors=>[ (0.1) x 7, 1  ], 
 	enums => [ (undef) x 8 , 
-	           [ qw ( grid off-girid ), (undef) x 8, qw ( hybrid ) ],
+	           [ qw ( grid off-grid ), (undef) x 8, qw ( hybrid ) ],
 		   [ qw (trafoless trafo ) ] ,
 	   	   [ qw ( disbl enbl ) ] x2 				],	   
 

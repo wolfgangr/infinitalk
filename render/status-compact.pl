@@ -114,11 +114,11 @@ for my $sf ( sort keys %status  ) {
 
 	print CGI::h3( '# ' .   $sf );
 
-	print  $statgrp{ path }  ;
+	print "<tt> $statgrp{ path } </tt>" ;
 	my $tp_stat = Time::Piece->new( $statgrp{ upd_t } );
 	my $elapsed =  $tp_now->epoch - $tp_stat->epoch ;
 
-	printf " - modified: %s - age:%d sec\n" , $tp_stat->strftime($dtformat) , $elapsed  ;
+	printf " - modified: %s - age: <b>%d</b> sec\n" , $tp_stat->strftime($dtformat) , $elapsed  ;
 
 	print "<hr>\n" ;
 	# print $navbar ; 	
@@ -144,13 +144,14 @@ for my $sf ( sort keys %status  ) {
 
 		for my $i (0 .. $#{$reg{fields}} ) {
 			# my $tif = "<td>%s</t>";
-			my $value = $reg{scaled_vals}->[ $i ] ;
-			printf  '<td align="right"><b>%s&nbsp;</b> </td>' ,  $value ;
+			my $value = $reg{scaled_vals}->[ $i ]  ;
+			printf  '<td align="right"><b>%s&nbsp;</b> </td>' ,  
+				(defined  $value ) ? $value : '####'  ;
 
 			# $reg{scaled_vals}->[ $i ] ;	
 
 			my $units = $reg{units}->[ $i ] || '' ;		
-			if ( $reg{enums}->[ $i ] and (my $enum = $reg{enums}->[ $i ][$value ] ) )
+			if ( (defined $value) and  $reg{enums}->[ $i ] and (my $enum = $reg{enums}->[ $i ][$value ] ) )
 				{ $units = $enum } # enum wins
 
 			printf  '<td align="left">&nbsp;%s</td>' , $units ;

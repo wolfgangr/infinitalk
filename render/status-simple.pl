@@ -41,7 +41,7 @@ for my $sfh (values %status ) {
 	next unless $sfh->{ exists } = -e $sfh->{  path }  ;
 	# $sfh->{ kilroy } = 'was here' ;
 	# content
-	$sfh->{ hash } = Storable::lock_retrieve( $sfh->{  path } );
+	$sfh->{ status_data } = Storable::lock_retrieve( $sfh->{  path } );
 	# update time
 	$sfh->{ upd_t } = (stat( $sfh->{  path }   ))[9];
 	$sfh->{ read } = 1 ;
@@ -59,14 +59,19 @@ for my $sfh (values %status ) {
 
 for my $sfh (values %status ) {
     	my %strh ; # where we collect a string info tree per state file
-    	my $infini_reg = $sfh->{ hash }; # the raw stuff we got from file
+    	my $infini_reg = $sfh->{ status_data }; # the raw stuff we got from file
     	for my $cmd (keys %{$infini_reg} ) {
-		# my $data_aryp = $$infini_reg{ $cmd }[2];
+		my $data_aryp = $$infini_reg{ $cmd }[2];
 		# my %cmd_strh = ( cmd => $cmd , 	p17 => $p17{ $cmd } , ) ;
 		$strh{ $cmd } = $p17{ $cmd } ;
-		$strh{ $cmd }->{data} = $$infini_reg{ $cmd }[2];
+		$strh{ $cmd }->{raw_vals } = $data_aryp ;
+		my @scaled = map { 
+		  	$$data_aryp[ $_ ]
+		    } $#$data_aryp ;
+
+		$strh{ $cmd }->{scaled_vals } = \@scaled ;
     	}
-    	$sfh->{ strh } = \%strh ; 	
+    	$sfh->{ merged } = \%strh ; 	
 }
 
 # ~~~~~~~~~~~~ generate HTML ~~~~~~~~~

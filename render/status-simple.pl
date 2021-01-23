@@ -93,15 +93,25 @@ print "<br><hr><br>\n" ;
 
 for my $sf ( sort keys %status  ) {
 	my %statgrp = %{ $status{ $sf } } ;
-	print "$sf --->  $statgrp{ path } , <br>\n"; 
+	print "<br><hr><br>\n" ;
+	print CGI::h3( '# ' .   $sf );
+	print  $statgrp{ path }  ; 
+	
 	my %merged = %{ $statgrp{ merged } };
 	for my $reg ( sort keys %merged  ) {
-		print ":$reg: ";
+		print CGI::h4 (  "Register $reg " );
 		my %reg = %{ $merged{ $reg } };
-		for my $i (0 .. $#{$reg{fields}} ) {
-			print $reg{fields}->[ $i ] ;
-		}
 
+		print "<table>";
+		for my $i (0 .. $#{$reg{fields}} ) {
+			print "<tr>";
+			my $tif = "<td> &nbsp; %s &nbsp; </t>";
+			printf  $tif ,  $reg{scaled_vals}->[ $i ] ;
+			printf  $tif ,  $reg{units}->[ $i ] || '' ; # if defined $reg{units}->[ $i ] ;
+			printf  $tif ,  $reg{fields}->[ $i ] ;
+			print "</tr>";
+		}
+		print "</table>";
 		print "<br>\n";
 	}
 

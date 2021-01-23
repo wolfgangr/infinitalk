@@ -176,10 +176,11 @@ $p17{'PS'} = {
 	units=>[ ('W') x 11, ('VA') x 4, ('%') ], 
 	factors=>[ 1,1, (undef) x5,  (1) x 9 ],
 	enums => [ (undef) x 16 ,
-		[ qw ( idle work ) ] x 2 ,
-		[ qw ( idle chrg disc ) ] ,
-		[ qw ( AC-DC DC-AC ) ] ,
-		[ qw ( inp outp ) ] 		] ,
+		[ qw ( discon conct     ) ] ,
+		[ qw ( idle work        ) ] x 2 ,
+		[ qw ( idle chrg disc   ) ] ,
+		[ qw ( idle AC-DC DC-AC ) ] ,
+		[ qw ( idle inp outp    ) ] 		] ,
 } ;
 
 

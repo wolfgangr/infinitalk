@@ -31,14 +31,16 @@ my $dt_until = Time::Piece->new( $until );
 my $epc_from  = $dt_from->epoch ;
 my $epc_until = $dt_until->epoch ;
 
-print "from: $from  ->  $dt_from  ->  $epc_from \n";
-print "until $until  ->  $dt_until  ->  $epc_until \n";
+# print "from: $from  ->  $dt_from  ->  $epc_from \n";
+# print "until $until  ->  $dt_until  ->  $epc_until \n";
 
 
 
 
 open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!"; 
 
+my $cnt_start=0;
+my $cnt_lines=0;
 while (<$LOG>) {
 	# 2021-01-21 15:08:53 - status chaged old->new:##,####,######:05,4541,000003
 	my @fields = /^([\d\-]{10} [\d\:]{8})[^:]*:([\d\#\,]{14}):([\d\,]{14})$/ ;
@@ -47,8 +49,13 @@ while (<$LOG>) {
 	my $dt_line = Time::Piece->strptime(    $fields[0] , $dt_format   ) ;
 
 	# select time interval
-	next if ( (my $dt_epoc = $dt_line->epoch ) < $epc_from ) ;
+	unless($cnt_lines) {	
+		$cnt_start++;
+		next if ( (my $dt_epoc = $dt_line->epoch ) < $epc_from ) ;
+	}
 	last if ( (my $dt_epoc = $dt_line->epoch ) > $epc_until ) ;
+	$cnt_lines++;
+
 	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
 	# comparations to go here ======================= TODO
 
@@ -87,6 +94,10 @@ while (<$LOG>) {
 	# last;
 	#===============================
 }
+
+
+printf " -- DONE -- matching lines: start=%d , count=%d\n", $cnt_start, $cnt_lines  ;
+
 close $LOG ;
 
 # DEBUG ($q, $from , $until ) ;

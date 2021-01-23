@@ -93,8 +93,9 @@ $p17{'PIRI'} = {
 	units=>[ qw ( V Hz A V A A V) ], 
 	factors=>[ (0.1) x 7, 1  ], 
 	enums => [ (undef) x 8 , 
-	           [ qw ( grid off-grid ), (undef) x 8, qw ( hybrid ) ],
-	   	   [ qw ( enbl disbl ) ] x2 				],	   
+	           [ qw ( grid off-girid ), (undef) x 8, qw ( hybrid ) ],
+		   [ qw (trafoless trafo ) ] ,
+	   	   [ qw ( disbl enbl ) ] x2 				],	   
 
 } ;
 
@@ -122,7 +123,7 @@ $p17{'MAR'} = {
 # inserted 2021-01-23 - does this break anything??
 #
 $p17{'FLAG'} = {
-	tag=>'enbl flags status',
+	tag=>'enable flags status',
 	use=>{ conf1=>5 },
 	fields=> [
 		'Mute buzzer beep',
@@ -135,7 +136,7 @@ $p17{'FLAG'} = {
 		'De-rat. pwr f Grid freq.',
 		'BMS Battery Connect',
 	   	],
-	enums => [  [ qw ( enbl disbl ) ] x 9 ] ,
+	enums => [  [ qw (  disbl enbl  ) ] x 9 ] ,
 };
 
 $p17{'GS'} = {
@@ -257,7 +258,7 @@ $p17{'HECS'} = {
 	], 
 	units=>[ '', qw ( A B C D E F G H ) ],
 	enums => [ [ qw ( Batt-Load-Grid Load-Batt-Grid Load-Grid-Batt ) ],
-		   [ qw ( enbl disbl ) ] x 8 					],
+		   [ qw ( disbl enbl ) ] x 8 					],
 };
 
 

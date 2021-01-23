@@ -120,7 +120,7 @@ for my $sf ( sort keys %status  ) {
 }
 
 #------------------------------------------------
-goto ENDOFDEBUG;
+# goto ENDOFDEBUG;
 print "<br><hr>\n" ;
 print CGI::h3('Debug:');
 print "<pre>";

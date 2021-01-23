@@ -86,10 +86,31 @@ print CGI::header();
 print CGI::start_html(-title => $title);
 print CGI::h3($title);
 
+print "<br><hr>\n" ;
 print join "<br>\n",  @stat_fls;
-print "<br>\n" ;
+print "<br><hr><br>\n" ;
+#------------------------------------------------
 
-print CGI::h2('Debug:');
+for my $sf ( sort keys %status  ) {
+	my %statgrp = %{ $status{ $sf } } ;
+	print "$sf --->  $statgrp{ path } , <br>\n"; 
+	my %merged = %{ $statgrp{ merged } };
+	for my $reg ( sort keys %merged  ) {
+		print ":$reg: ";
+		my %reg = %{ $merged{ $reg } };
+		for my $i (0 .. $#{$reg{fields}} ) {
+			print $reg{fields}->[ $i ] ;
+		}
+
+		print "<br>\n";
+	}
+
+	print "<br>\n";
+}
+
+#------------------------------------------------
+print "<br><hr>\n" ;
+print CGI::h3('Debug:');
 print "<pre>";
 
 print Dumper( @stat_fls, %status, %p17  );

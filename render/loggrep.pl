@@ -24,8 +24,8 @@ my $q=CGI->new;
 print $q->header(-type => 'text/plain' ,
 	-charset => 'utf8' );
 
-my $from  = $q->param('from' );
-my $until = $q->param('until');
+my $from  = $q->param('from' ) || 0;
+my $until = $q->param('until') || time()  ;
 my $dt_from  = Time::Piece->new( $from  );
 my $dt_until = Time::Piece->new( $until );
 my $epc_from  = $dt_from->epoch ;
@@ -46,7 +46,7 @@ while (<$LOG>) {
 	next unless ( (scalar @fields) == 3) ;
 	my $dt_line = Time::Piece->strptime(    $fields[0] , $dt_format   ) ;
 	my $dt_epoc = $dt_line->epoch ;
-	print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
+	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
 	# comparations to go here ======================= TODO
 
 	# my $newstate = sprintf "%02x,%04x,%06x", $wm , $ps_2bits, $ws_bits ;
@@ -54,8 +54,8 @@ while (<$LOG>) {
 	next unless ( (scalar @chunks) == 3) ;
 	my ($wm, $ps_2bits, $ws_bits) = @chunks ;
 
-	print Dumper ( @fields, @chunks) ;
-	print Dumper ($wm, $ps_2bits, $ws_bits );
+	# print Dumper ( @fields, @chunks) ;
+	# print Dumper ($wm, $ps_2bits, $ws_bits );
 
 	my $ps_2b_x = hex $ps_2bits;
 	# printf ($ps_2b_x
@@ -64,7 +64,7 @@ while (<$LOG>) {
 		unshift @ps, ( $ps_2b_x & 0x03 ) ;
 		$ps_2b_x >>= 2;
 	}
-	print Dumper (@ps);
+	# print Dumper (@ps);
 
 	my $ws_x = hex  $ws_bits ;
 	my @ws;
@@ -72,7 +72,7 @@ while (<$LOG>) {
 		unshift @ws , ( $ws_x & 0x01 );
 		$ws_x >>= 1;
 	}
-	print Dumper (@ws);
+	# print Dumper (@ws);
 
 	my $mr_ps = join ',' , @ps;
 	my $mr_ws = join ',' , @ws;

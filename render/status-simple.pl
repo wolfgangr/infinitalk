@@ -66,8 +66,12 @@ for my $sfh (values %status ) {
 		$strh{ $cmd } = $p17{ $cmd } ;
 		$strh{ $cmd }->{raw_vals } = $data_aryp ;
 		my @scaled = map { 
-		  	$$data_aryp[ $_ ]
-		    } $#$data_aryp ;
+			my $fc = $strh{ $cmd }->{ factors }->[ $_ ];
+			my $raw = $data_aryp->[ $_ ] ;
+			# $$data_aryp[ $_ ] * ( defined $fc ? $fc : 1 ) ;
+			(defined $fc) ? ($raw * $fc) : $raw ;
+			# $raw ;
+		    } ( 0 .. $#$data_aryp ) ;
 
 		$strh{ $cmd }->{scaled_vals } = \@scaled ;
     	}

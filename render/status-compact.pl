@@ -22,11 +22,18 @@ require '../P17_def.pl' ;
 
 #~~~~~~~~ end of config ~~~~~
 
+my $q = CGI->new;
+my $myself = $q->self_url;
+
+
 my $tp_now = Time::Piece->new() ;
 $title .= ' - ' . $tp_now->strftime($dtformat) ;
 
 # parse file name list
-my @stat_fls =  sort split "\n", $status_files;
+# if (my @selected = $q->multi_param('select') ) {
+# my @preselect  = $q->multi_param('select') ;
+my @stat_fls =  sort split "\n", $status_files  ; # unless @stat_fls;
+
 my %status = 
 	map { 
 		/\/(\w+)\..+$/   ; 
@@ -35,6 +42,16 @@ my %status =
 	} 
 	@stat_fls;
 	# split "\n", $status_files;
+
+# check for preselection at url
+my @all_file_tags = sort keys %status;
+
+my %preselect;
+for my $sd ($q->multi_param('select') ) {
+	$preselect{ $sd } = $status{ $sd };
+}
+if (%preselect) { %status = %preselect } 
+
 
 # read from disk
 for my $sfh (values %status ) {
@@ -80,13 +97,13 @@ for my $sfh (values %status ) {
 
 # ~~~~~~~~~~~~ generate HTML ~~~~~~~~~
 
-my $q = CGI->new;
-my $myself = $q->self_url;
+# my $q = CGI->new;
+# my $myself = $q->self_url;
 
 # create a navigation link jumper bar
 my $navbar ="\n". '<p><table border="0" width="100%" bgcolor="#aaaaaa" ><tr>' ." \n";
 
-for my $sf ( sort keys %status  ) {
+for my $sf ( @all_file_tags  ) {
 	$navbar .= '<td align="center">';
 	$navbar .= sprintf '<a href="%s#%s">&nbsp;%s&nbsp;</a>', $myself , $sf, 
 		$sf ;

@@ -18,6 +18,7 @@ use Time::Piece();
 use Data::Dumper::Simple;
 
 my $logfile = './infini-status.log' ;
+my $dt_format = '%F %T' ;
 
 my $q=CGI->new;
 print $q->header(-type => 'text/plain' ,
@@ -43,9 +44,31 @@ while (<$LOG>) {
 	my @fields = /^([\d\-]{10} [\d\:]{8})[^:]*:([\d\#\,]{14}):([\d\,]{14})$/ ;
 
 	next unless ( (scalar @fields) == 3) ;
-	my $dt_line = Time::Piece->new( $fields[0]) ; 
+	my $dt_line = Time::Piece->strptime(    $fields[0] , $dt_format   ) ;
+	print " line date is " . $dt_line->datetime .' -> '. $dt_line->epoch ."\n";
+	# comparations to go here ======================= TODO
 
-	print Dumper ( @fields, $dt_line);
+	# my $newstate = sprintf "%02x,%04x,%06x", $wm , $ps_2bits, $ws_bits ;
+	my @chunks = split ',', $fields[2];
+	next unless ( (scalar @chunks) == 3) ;
+	my ($wm, $ps_2bits, $ws_bits) = @chunks ;
+
+	print Dumper ( @fields, @chunks) ;
+	print Dumper ($wm, $ps_2bits, $ws_bits );
+
+	my $ps_2b_x = hex ($ps_2bits);
+	# printf ($ps_2b_x
+	my @ps;
+	for (0 .. 7) {
+		unshift @ps, ( $ps_2b_x & 0x3 ) ;
+		$ps_2b_x >>= 2;
+	}
+
+	print Dumper (@ps );
+
+
+	# print Dumper ( $dt_line );
+	# print $dt_line->datetime;
 	last;
 	#===============================
 }

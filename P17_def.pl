@@ -14,6 +14,7 @@
 # (todo) - units=>[ ... ] optional list of physical units, 
 # (todo) - factors=>[ .... ] optional list of scaling factors 
 # - use=>{ group=>seq } assignment of field to logical ordering, may be repeated
+#  enums => [ [ qw (foo bar ) ] , undef x Y , [ 'tralala' , 'pipapo' ] ] 
 
 # output use collations:
 # conf0 ... conf4 - grouped config info similiar to SolarPower pages
@@ -30,6 +31,9 @@
 use utf8;
 
 our %p17 = ();
+
+# common enums
+# my $enum_enabled = [ qw ( disabled enabled ) ] ;
 
 
 $p17{'PI'} = {
@@ -88,6 +92,9 @@ $p17{'PIRI'} = {
 	'Enable/Disable for real-time control'	],
 	units=>[ qw ( V Hz A V A A V) ], 
 	factors=>[ (0.1) x 7, 1  ], 
+	enums => [ (undef) x 8 , 
+	           [ qw ( grid off-grid ), (undef) x 8, qw ( hybrid ) ],
+	   	   [ qw ( enbl disbl ) ] x2 				],	   
 
 } ;
 
@@ -110,6 +117,25 @@ $p17{'MAR'} = {
 		], 
 	units=>[   ('V') x4, ('Hz') x4, ('s') x2, ('V') x10, qw( A A W W ) ], 
 	factors=>[ (0.1) x4, (0.01) x4, (1) x 2,  (0.1) x12,         1,1 ], 
+};
+
+# inserted 2021-01-23 - does this break anything??
+#
+$p17{'FLAG'} = {
+	tag=>'enbl flags status',
+	use=>{ conf1=>5 },
+	fields=> [
+		'Mute buzzer beep',
+		'Mute buz beep in standby',
+		'Mute buz beep only on bat disch',
+		'Generator as AC input',
+		'Wide AC input range',
+		'N/G relay close in bat mod',
+		'De-rat. pwr f Grid volt.',
+		'De-rat. pwr f Grid freq.',
+		'BMS Battery Connect',
+	   	],
+	enums => [  [ qw ( enbl disbl ) ] x 9 ] ,
 };
 
 $p17{'GS'} = {
@@ -148,13 +174,19 @@ $p17{'PS'} = {
 	], 
 	units=>[ ('W') x 11, ('VA') x 4, ('%') ], 
 	factors=>[ 1,1, (undef) x5,  (1) x 9 ],
+	enums => [ (undef) x 16 ,
+		[ qw ( idle work ) ] x 2 ,
+		[ qw ( idle chrg disc ) ] ,
+		[ qw ( AC-DC DC-AC ) ] ,
+		[ qw ( inp outp ) ] 		] ,
 } ;
 
 
 $p17{'MOD'} = {
         tag=>'Working mode ',
 	use=>{ stat=>3 },
-        fields=>['mode' ]
+        fields=>['mode' ],
+	enums => [ [ qw (pw_on standby bypass batt fault hybrid chrg ) ] ] ,
 } ;
 
 $p17{'T'} = {
@@ -224,6 +256,8 @@ $p17{'HECS'} = {
 		'enbl Q(U) derating funcation'
 	], 
 	units=>[ '', qw ( A B C D E F G H ) ],
+	enums => [ [ qw ( Batt-Load-Grid Load-Batt-Grid Load-Grid-Batt ) ],
+		   [ qw ( enbl disbl ) ] x 8 					],
 };
 
 

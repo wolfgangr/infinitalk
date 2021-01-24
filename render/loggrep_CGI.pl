@@ -74,6 +74,8 @@ my $epc_until = $dt_until->epoch ;
 #         -charset => 'utf8' );
 
 my $do_htmltag = ! defined $q_all_params{ nohtmltag };
+$do_htmltag = 1 if (defined $q_all_params{htmltab}) ;
+
 my $html_title;
 if (! defined $q_all_params{ noheader }) {
 	$html_title = sprintf 'infini status change %s to  %s', 
@@ -87,10 +89,13 @@ if (! defined $q_all_params{ noheader }) {
 	$do_htmltag = 0 ;
 }
 
+# open html but keep at <pre> for nearly pretty monospace preamble printing
 if ( $do_htmltag ) {
 	print $q->start_html(-title => $html_title);
 	print "<pre>\n";
 }
+
+
 
 #---------------
 
@@ -108,6 +113,12 @@ unless (defined $q_all_params{ nopreamble }) {
 	printf $timedebugger , 'until', $until, $dt_until->strftime( $dt_format) ,  $epc_until ;
 }
 
+
+# open <table> if required
+if (defined $q_all_params{htmltab}) {
+	print "</pre>\n";
+	print '<table border ="1">' ."\n";
+}
 
 
 open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!"; 
@@ -176,7 +187,7 @@ while (<$LOG>) {
 
 		# print "machine readable line : ";
 		print	$mr_rv . "\n";
-	} elsif ( defined $q_all_params{chg_verbose}) {
+	} else  {
 		# ------------ what status changed ---------------
 		# my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
 		my @newstate = (  $dt_epoc ,   $wm ,  @ps, @ws ) ;
@@ -186,6 +197,8 @@ while (<$LOG>) {
 			# @changed =  diff_ary2D( \@newstate, \@laststate)      ;
 			@changed = map { $newstate[$_] - $laststate[$_]    } (0 .. $#newstate );
 		}
+	
+	    if ( defined $q_all_params{chg_verbose}) {
 		# we print unconditionally gproup leader since we think some change will be
 		print $dt_line_print , "\n";
 		for my $i ( grep { $changed[$_] } (1 .. $#changed) ) {
@@ -200,10 +213,22 @@ while (<$LOG>) {
 	
 		print Dumper ( @newstate, @changed, @laststate) if $debug ;
 		@laststate = @newstate;
+	    } elsif (defined $q_all_params{htmltab}) {
+		print "<tr><td> ----------- Debug ----------</td></tr>\n";
+	    	# html vertical tab
+    	    }
 	}
 
 }	 # ============= end of main <> loop ==============
+close $LOG ;
 
+# close html table
+if (defined $q_all_params{htmltab}) {
+        print "</table>\n";
+        print "<pre>";
+}
+
+# render in footer in pre / plain
 unless ( defined $q_all_params{nofooter}) {
 	if ( defined $q_all_params{simplefooter}) {
 		print $cnt_start .' '. $cnt_lines ;
@@ -212,10 +237,8 @@ unless ( defined $q_all_params{nofooter}) {
 			$cnt_start, $cnt_lines  ;
 	}
 }
-close $LOG ;
 
-# DEBUG ($q, $from , $until ) ;
-# print "~~~~~~~~~~~~~<br><hr>END\n";
+# close html syntax
 if ($do_htmltag) {
 	print "\n</pre>";
 	print $q->end_html();

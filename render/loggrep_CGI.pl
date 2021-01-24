@@ -20,6 +20,15 @@ use Time::Piece();
 my $logfile = './infini-status.log' ;
 my $dt_format = '%F %T' ;
 
+
+# defaults ...
+my $nolines = 0;
+my $nodata = 0;
+my $sep_mj =';';
+my $sep_mn =',';
+
+#-- end of config ---------
+
 my $q=CGI->new;
 print $q->header(-type => 'text/plain' ,
 	-charset => 'utf8' );
@@ -84,9 +93,9 @@ while (<$LOG>) {
 	}
 	# print Dumper (@ws);
 
-	my $mr_ps = join ',' , @ps;
-	my $mr_ws = join ',' , @ws;
-	my $mr_rv = join ';', $dt_epoc, $wm, $mr_ws, $mr_ps   ; 
+	my $mr_ps = join $sep_mn  , @ps;
+	my $mr_ws = join $sep_mn  , @ws;
+	my $mr_rv = join $sep_mj , $dt_epoc, $wm, $mr_ws, $mr_ps   ; 
 
 	# print "machine readable line : ";
         print	$mr_rv . "\n";

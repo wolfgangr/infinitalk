@@ -169,10 +169,14 @@ while (<$LOG>) {
 	#===============================
 }
 
-
-printf " -- DONE -- matching lines: start=%d , count=%d\n", $cnt_start, $cnt_lines  ;
-print $cnt_start .' '. $cnt_lines ;
-
+unless ( defined $q_all_params{nofooter}) {
+	if ( defined $q_all_params{simplefooter}) {
+		print $cnt_start .' '. $cnt_lines ;
+	} else {
+		printf " -- DONE -- matching lines: start=%d , count=%d\n", 
+			$cnt_start, $cnt_lines  ;
+	}
+}
 close $LOG ;
 
 # DEBUG ($q, $from , $until ) ;

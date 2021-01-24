@@ -1,14 +1,17 @@
 #!/usr/bin/perl
 #
-# # grep log file by time and return either 
-# - line range , 
-# - time list  
-# - line times
-# - raw lines
-# - csv expanded lines
-# - human readable lines
-# assume sorted entries
+# # grep log file by time and return 
+# 	stripped fast K.I.S.S. variant
 #
+# params: from until [nodata | nolines]
+# 	(from before until, rest can be permutated)
+#
+#
+#  output sth like ... 
+#     unixtime [ ; work mode ; power status ; warn status ]
+# 1611380067;05;1,1,1,1,1,0,0,1;0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1
+# 1611418466;05;1,1,1,1,1,0,0,1;0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1
+# 345 4      <- first matching line, number of matching lines
 
 
 use warnings;
@@ -35,11 +38,11 @@ my $nolines = 0;
 my $nodata = 0;
 my ( $from, $until);
 while ( my $arg = shift @ARGV) {
-	if ( $arg =~ /nolines/  ) { $nolines = 1  ; next }
-	if ( $arg =~ /nodata/   ) { $nodata  = 1  ; next }
-	unless ( $from  ) { $from    = $arg  ; next }
-	unless ( $until ) { $until   = $arg  ; next }
-	die "K.I.S.S.:   rtfS";
+	if ( $arg =~ /^nolines$/  ) { $nolines = 1  ; next }
+	if ( $arg =~ /^nodata$/   ) { $nodata  = 1  ; next }
+	if ( $arg+0 and !  $from  ) { $from    = $arg  ; next }
+	if ( $arg+0 and !  $until ) { $until   = $arg  ; next }
+	die " usage: $0 [from [until]] [nodata | nolines] - or K.I.S.S.:   rtfS";
 }
 
 
@@ -75,15 +78,17 @@ while (<$LOG>) {
 	last if ( (my $dt_epoc = $dt_line->epoch ) > $until ) ;
 	$cnt_lines++;
 
+	# fist chance to take the short way
 	next if $nolines ;
-	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
-	# comparations to go here ======================= TODO
 
 	# oputput time in seconds
 	print $dt_epoc;  
 
+	# second chance to take the short way
 	if ($nodata) { print "\n" ; next }
 
+	# data processing 
+	# thus is was generated:
 	# my $newstate = sprintf "%02x,%04x,%06x", $wm , $ps_2bits, $ws_bits ;
 	my @chunks = split ',', $fields[2];
 	next unless ( (scalar @chunks) == 3) ;
@@ -111,28 +116,14 @@ while (<$LOG>) {
 
 	my $mr_ps = join ',' , @ps;
 	my $mr_ws = join ',' , @ws;
-	# my $mr_rv = join ';',  $wm, $mr_ws, $mr_ps   ; 
 
 	# print "machine readable line : ";
         printf ";%s;%s;%s\n" , $wm, $mr_ps, $mr_ws;
-	# print Dumper ( $dt_line );
-	# print $dt_line->datetime;
-	# last;
-	#===============================
-	
 }
-
-
 # printf " -- DONE -- matching lines: start=%d , count=%d\n", $cnt_start, $cnt_lines  ;
 print $cnt_start .' '. $cnt_lines ;
 
 close $LOG ;
-
-# DEBUG ($q, $from , $until ) ;
-# print "~~~~~~~~~~~~~<br><hr>END\n";
-
-
-
 
 exit;
 

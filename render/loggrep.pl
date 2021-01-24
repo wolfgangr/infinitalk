@@ -34,12 +34,23 @@ my $dt_format = '%F %T' ;
 # my $epc_from  = $dt_from->epoch ;
 # my $epc_until = $dt_until->epoch ;
 
+# defaults ...
 my $nolines = 0;
 my $nodata = 0;
+my $sep_mj =':';
+my $sep_mn =',';
+
+# ... may be overwritten:
 my ( $from, $until);
 while ( my $arg = shift @ARGV) {
 	if ( $arg =~ /^nolines$/  ) { $nolines = 1  ; next }
-	if ( $arg =~ /^nodata$/   ) { $nodata  = 1  ; next }
+	if ( $arg =~ /^noidata$/  ) { $nodata  = 1  ; next }
+
+	if ( $arg =~ /^semicolons_mj$/  ) { $sep_mj =';'  ; next }
+	if ( $arg =~ /^commas_mj$/      ) { $sep_mj =','  ; next }
+	if ( $arg =~ /^semicolons_mn$/  ) { $sep_mn =';'  ; next }
+	if ( $arg =~ /^colons_mn$/      ) { $sep_mn =':'  ; next }
+
 	if ( $arg+0 and !  $from  ) { $from    = $arg  ; next }
 	if ( $arg+0 and !  $until ) { $until   = $arg  ; next }
 	die " usage: $0 [from [until]] [nodata | nolines] - or K.I.S.S.:   rtfS";
@@ -114,11 +125,11 @@ while (<$LOG>) {
 	}
 	# print Dumper (@ws);
 
-	my $mr_ps = join ',' , @ps;
-	my $mr_ws = join ',' , @ws;
+	my $mr_ps = join $sep_mn , @ps;
+	my $mr_ws = join $sep_mn , @ws;
 
 	# print "machine readable line : ";
-        printf ";%s;%s;%s\n" , $wm, $mr_ps, $mr_ws;
+        printf "%.1s%.2s%.1s%s%.1s%s\n" , $sep_mj,$wm , $sep_mj,$mr_ps , $sep_mj,$mr_ws;
 }
 # printf " -- DONE -- matching lines: start=%d , count=%d\n", $cnt_start, $cnt_lines  ;
 print $cnt_start .' '. $cnt_lines ;

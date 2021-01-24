@@ -167,39 +167,42 @@ while (<$LOG>) {
 		$ws_x >>= 1;
 	}
 
-	# ----- prepare for printing -------
-	my $mr_ps = join $sep_mn  , @ps;
-	my $mr_ws = join $sep_mn  , @ws;
-	my $mr_rv = join $sep_mj , $dt_line_print,  $wm, $mr_ws, $mr_ps   ; 
+	unless ( defined $q_all_params{chg_verbose}) {
 
-	# print "machine readable line : ";
-        print	$mr_rv . "\n";
+		# ----- prepare for printing -------
+		my $mr_ps = join $sep_mn  , @ps;
+		my $mr_ws = join $sep_mn  , @ws;
+		my $mr_rv = join $sep_mj , $dt_line_print,  $wm, $mr_ws, $mr_ps   ; 
 
-	# ------------ what status changed ---------------
-	# my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
-	my @newstate = (  $dt_epoc ,   $wm ,  @ps, @ws ) ;
-	my @changed =();
-	my $ccnt =0;
-	if (@laststate) {
-		# @changed =  diff_ary2D( \@newstate, \@laststate)      ;
-		@changed = map { $newstate[$_] - $laststate[$_]    } (0 .. $#newstate );
+		# print "machine readable line : ";
+		print	$mr_rv . "\n";
+	} elsif ( defined $q_all_params{chg_verbose}) {
+		# ------------ what status changed ---------------
+		# my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
+		my @newstate = (  $dt_epoc ,   $wm ,  @ps, @ws ) ;
+		my @changed =();
+		my $ccnt =0;
+		if (@laststate) {
+			# @changed =  diff_ary2D( \@newstate, \@laststate)      ;
+			@changed = map { $newstate[$_] - $laststate[$_]    } (0 .. $#newstate );
+		}
+		# we print unconditionally gproup leader since we think some change will be
+		print $dt_line_print , "\n";
+		for my $i ( grep { $changed[$_] } (1 .. $#changed) ) {
+			my $lbl = $labelizer_p17[ $i ];
+			my $enm = $lbl->{ 'enum' };
+			printf "\treg %s ( %s : %s ) changed %s -> %s \n", 
+				$lbl->{ 'parent' }, $lbl->{ 'p_tag' }, $lbl->{ 'tag' },
+				$$enm[ $laststate[ $i ] ] , 
+				$$enm[ $newstate[  $i ] ] ;
+
+		}
+	
+		print Dumper ( @newstate, @changed, @laststate) if $debug ;
+		@laststate = @newstate;
 	}
 
-	for my $i ( grep { $changed[$_] } (1 .. $#changed) ) {
-		my $lbl = $labelizer_p17[ $i ];
-		my $enm = $lbl->{ 'enum' };
-		printf "\treg %s ( %s : %s ) changed %s -> %s \n", 
-			$lbl->{ 'parent' }, $lbl->{ 'p_tag' }, $lbl->{ 'tag' },
-			$$enm[ $laststate[ $i ] ] , 
-			$$enm[ $newstate[  $i ] ] ;
-
-	}
-
-	print Dumper ( @newstate, @changed, @laststate) if $debug ;
-	@laststate = @newstate;
-	#===============================
-	# print Dumper (@laststate, @changed);
-}
+}	 # ============= end of main <> loop ==============
 
 unless ( defined $q_all_params{nofooter}) {
 	if ( defined $q_all_params{simplefooter}) {

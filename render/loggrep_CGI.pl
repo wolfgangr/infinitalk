@@ -60,14 +60,24 @@ my $epc_until = $dt_until->epoch ;
 # print $q->header(-type => 'text/plain' ,
 #         -charset => 'utf8' );
 
+my $do_htmltag = ! defined $q_all_params{ nohtmltag };
+my $html_title;
+if (! defined $q_all_params{ noheader }) {
+	$html_title = sprintf 'infini status change %s to  %s', 
+		$dt_from->strftime( $dt_format) ,  $dt_until->strftime( $dt_format)  ;
 
-my $html_title = sprintf 'infini status change %s to  %s', 
-	$dt_from->strftime( $dt_format) ,  $dt_until->strftime( $dt_format)  ;
+	print $q->header(-type => 'text/html',	 -charset => 'utf8' );
+} else {
+	print $q->header(-type => 'text/plain',  -charset => 'utf8' );
 
-print $q->header(-type => 'text/html' ,
-         -charset => 'utf8' );
-print $q->start_html(-title => $html_title);
-print "<pre>\n";
+	# 'nohtmltag' supresses html and pre tags as well
+	$do_htmltag = 0 ;
+}
+
+if ( $do_htmltag ) {
+	print $q->start_html(-title => $html_title);
+	print "<pre>\n";
+}
 
 #---------------
 
@@ -161,9 +171,10 @@ close $LOG ;
 
 # DEBUG ($q, $from , $until ) ;
 # print "~~~~~~~~~~~~~<br><hr>END\n";
-print "\n</pre>";
-print $q->end_html();
-
+if ($do_htmltag) {
+	print "\n</pre>";
+	print $q->end_html();
+}
 
 exit;
 

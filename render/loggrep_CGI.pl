@@ -26,7 +26,7 @@ use Cwd  qw( abs_path );
 # use Data::Dumper::Simple;  # conditinal on debug - performance killer
 
 # my $logfile = './infini-status.log' ;
-my @logfiles = qw ( ./infini-status.log ./infini-status.log.1  ) ;
+my @logfiles = qw ( ./infini-status.log.1 ./infini-status.log  ) ;
 my $dt_format = '%F %T' ;
 
 our %p17;

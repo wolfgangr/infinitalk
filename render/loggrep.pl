@@ -21,7 +21,7 @@ use Cwd  qw( abs_path );
 use Time::Piece();
 # use Data::Dumper::Simple;
 
-my @logfiles = qw ( ./infini-status.log ./infini-status.log.1  ) ;
+my @logfiles = qw ( ./infini-status.log.1 ./infini-status.log  ) ;
 my $dt_format = '%F %T' ;
 
 # my $q=CGI->new;

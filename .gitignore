@@ -1,6 +1,7 @@
 *.swp
 *.rrd
 *.log
+*.log.1
 create_infini_rrd.sh
 tmp/*
 rrd2csv.pl

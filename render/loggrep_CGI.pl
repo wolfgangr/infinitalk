@@ -116,8 +116,16 @@ unless (defined $q_all_params{ nopreamble }) {
 
 # open <table> if required
 if (defined $q_all_params{htmltab}) {
+	print Dumper (@labelizer_p17);
 	print "</pre>\n";
-	print '<table border ="1">' ."\n";
+	print '<table border ="0" bgcolor ="#cccccc">' ."\n";
+	print '<tr align="center" valign="bottom" bgcolor ="#e0e0e0">';
+	for my $lbl (@labelizer_p17) {
+		printf '<td><font size="-2">%s</font></td>', $lbl->{tag} ;
+
+	}
+
+	print '</tr>';
 }
 
 
@@ -167,18 +175,19 @@ while (<$LOG>) {
 	my $ps_2b_x = hex $ps_2bits;
 	my @ps;
 	for (0 .. 7) {
-		unshift @ps, ( $ps_2b_x & 0x03 ) ;
+		push @ps, ( $ps_2b_x & 0x03 ) ;
 		$ps_2b_x >>= 2;
 	}
 
 	my $ws_x = hex  $ws_bits ;
 	my @ws;
 	for (0 .. 21) {
-		unshift @ws , ( $ws_x & 0x01 );
+		push @ws , ( $ws_x & 0x01 );
 		$ws_x >>= 1;
 	}
-
-	unless ( defined $q_all_params{chg_verbose}) {
+	
+	my (@newstate, @changed );
+	unless ( defined $q_all_params{chg_verbose} or defined $q_all_params{htmltab}) {
 
 		# ----- prepare for printing -------
 		my $mr_ps = join $sep_mn  , @ps;
@@ -190,8 +199,8 @@ while (<$LOG>) {
 	} else  {
 		# ------------ what status changed ---------------
 		# my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
-		my @newstate = (  $dt_epoc ,   $wm ,  @ps, @ws ) ;
-		my @changed =();
+		@newstate = (  $dt_epoc ,   $wm ,  @ps, @ws ) ;
+		@changed =();
 		my $ccnt =0;
 		if (@laststate) {
 			# @changed =  diff_ary2D( \@newstate, \@laststate)      ;
@@ -212,11 +221,23 @@ while (<$LOG>) {
 		}
 	
 		print Dumper ( @newstate, @changed, @laststate) if $debug ;
-		@laststate = @newstate;
-	    } elsif (defined $q_all_params{htmltab}) {
-		print "<tr><td> ----------- Debug ----------</td></tr>\n";
+		# @laststate = @newstate;
+	    } elsif (defined ($q_all_params{htmltab})) {
+		print '<tr>';
+		printf "<td>%s</td>", $dt_line_print ;
+
+		for my $i (1 .. $#newstate) {
+			my $lbl = $labelizer_p17[ $i ];
+			my $enm = $lbl->{ 'enum' };
+			printf '<td>%s</td>', $$enm[ $newstate[  $i ] ] ;
+		}
+		print "<td> ----------- Debug ----------</td>"  ;
+		print "</tr>\n";
+
+		#print "<tr><td> ----------- Debug ----------</td></tr>\n";
 	    	# html vertical tab
     	    }
+	    @laststate = @newstate;
 	}
 
 }	 # ============= end of main <> loop ==============

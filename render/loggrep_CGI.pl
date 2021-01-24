@@ -31,13 +31,17 @@ my $q=CGI->new;
 # print $q->header(-type => 'text/plain' ,
 # 	-charset => 'utf8' );
 
+# the one for all CGI param hash
+my %q_all_params = $q->Vars ;
+
+
 my $from   = $q->param('from' )   || 0;
 my $until  = $q->param('until')   || time()  ;
 
 my $sep_mj = $q->param('sep_mj')  || ';';
 my $sep_mn = $q->param('sep_mn')  || ',';
-my $nolines= $q->param('nolines') ||  0;
-my $nodata = $q->param('nodata')  ||  0;
+# my $nolines= $q->param('nolines') ||  0;
+# my $nodata = $q->param('nodata')  ||  0;
 
 my $debug  = $q->param('debug')   || 1;
 if ($debug) { use Data::Dumper::Simple ;}
@@ -67,14 +71,14 @@ print "<pre>\n";
 
 #---------------
 
-print Dumper($q) if $debug;
-
-
-my %q_all_params = $q->Vars ;
+# print Dumper($q) if $debug;
 print Dumper( %q_all_params ) if $debug;
 
-print "from: $from  ->  $dt_from  ->  $epc_from \n";
-print "until $until  ->  $dt_until  ->  $epc_until \n";
+# print "from: $from  ->  " . $dt_from->strftime( $dt_format)  ->  $epc_from \n";
+# print "until $until  ->  " . $dt_until->strftime( $dt_format)  ->  $epc_until \n";
+my $timedebugger = "%s: %s  ->  %s  ->  %d \n";
+printf $timedebugger , 'from ', $from , $dt_from->strftime( $dt_format) ,  $epc_from ;
+printf $timedebugger , 'until', $until, $dt_until->strftime( $dt_format) ,  $epc_until ;
 
 
 
@@ -97,6 +101,17 @@ while (<$LOG>) {
 	}
 	last if ( (my $dt_epoc = $dt_line->epoch ) > $epc_until ) ;
 	$cnt_lines++;
+	
+	next if ( defined $q_all_params{nolines} ) ;
+
+	if ( defined $q_all_params{dt_epoc}) {
+		print $dt_epoc ;
+	} else {
+		print $dt_line->strftime( $dt_format) ;
+	}
+
+	if ( defined $q_all_params{nodata}) { print "\n"; next  ; }
+
 
 	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
 	# comparations to go here ======================= TODO
@@ -128,7 +143,7 @@ while (<$LOG>) {
 
 	my $mr_ps = join $sep_mn  , @ps;
 	my $mr_ws = join $sep_mn  , @ws;
-	my $mr_rv = join $sep_mj , $dt_epoc, $wm, $mr_ws, $mr_ps   ; 
+	my $mr_rv = join $sep_mj , '',  $wm, $mr_ws, $mr_ps   ; 
 
 	# print "machine readable line : ";
         print	$mr_rv . "\n";

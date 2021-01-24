@@ -223,15 +223,15 @@ while (<$LOG>) {
 		print Dumper ( @newstate, @changed, @laststate) if $debug ;
 		# @laststate = @newstate;
 	    } elsif (defined ($q_all_params{htmltab})) {
-		print '<tr>';
-		printf "<td>%s</td>", $dt_line_print ;
+		print '<tr align="center" bgcolor="#ffffff">';
+		printf '<td><nobr><font size="-1">%s</font></nobr></td>', $dt_line_print ;
 
 		for my $i (1 .. $#newstate) {
 			my $lbl = $labelizer_p17[ $i ];
 			my $enm = $lbl->{ 'enum' };
-			printf '<td>%s</td>', $$enm[ $newstate[  $i ] ] ;
+			printf '<td><nobr><font size="-1">%s</font></nobr></td>', 
+				$$enm[ $newstate[  $i ] ] ;
 		}
-		print "<td> ----------- Debug ----------</td>"  ;
 		print "</tr>\n";
 
 		#print "<tr><td> ----------- Debug ----------</td></tr>\n";

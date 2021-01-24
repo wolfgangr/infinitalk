@@ -170,15 +170,15 @@ while (<$LOG>) {
         print	$mr_rv . "\n";
 
 	# ------------ what status changed ---------------
-	my @newstate = ( $dt_epoc, $wm,   @ps, @ws ,) ;
-	my %changed =();
+	my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
+	my @changed =();
+	my $ccnt =0;
 	if (@laststate) {
-		for my $i (1 .. $#laststate) {
-		}
+		@changed =  diff_ary2D( \@newstate, \@laststate)      ;
 	}
 	@laststate = @newstate;
 	#===============================
-	print Dumper (@laststate);
+	print Dumper (@laststate, @changed);
 }
 
 unless ( defined $q_all_params{nofooter}) {
@@ -202,3 +202,17 @@ exit;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# element wise subtract 2 dim arrays
+# dimesionality must match
+sub diff_ary2D {
+	my ($A, $B) = @_;
+	my @C =() ;
+	for my $i (0 .. $#$A) {
+		my @c = ();
+		for my $k (0 .. $#{$$A[$i]}   ) {
+			push @c, ( $$A[$i][$k] - $$B[$i][$k]) ;  
+		}
+		push @C, \@c ;
+	}
+	return @C;
+}

@@ -56,7 +56,7 @@ my $sep_mn = $q->param('sep_mn')  || ',';
 # my $nolines= $q->param('nolines') ||  0;
 # my $nodata = $q->param('nodata')  ||  0;
 
-my $debug  = (defined $q_all_params{debug}) ?  $q->param('debug')  : 1;
+my $debug  = (defined $q_all_params{debug}) ?  $q->param('debug')  : 0;
 if ($debug) { use Data::Dumper::Simple ;}
 
 
@@ -100,8 +100,8 @@ if ( $do_htmltag ) {
 #---------------
 
 # print Dumper($q) if $debug;
-print Dumper( %q_all_params ) if $debug;
-print Dumper( %p17 ) if $debug;
+print Dumper( %q_all_params )  if $debug;
+print Dumper( %p17 )           if $debug;
 print Dumper(@labelizer_p17 )  if $debug;
 
 # print "from: $from  ->  " . $dt_from->strftime( $dt_format)  ->  $epc_from \n";
@@ -116,7 +116,7 @@ unless (defined $q_all_params{ nopreamble }) {
 
 # open <table> if required
 if (defined $q_all_params{htmltab}) {
-	print Dumper (@labelizer_p17);
+	# print Dumper (@labelizer_p17);
 	print "</pre>\n";
 	print '<table border ="0" bgcolor ="#cccccc">' ."\n";
 	print '<tr align="center" valign="bottom" bgcolor ="#e0e0e0">';

@@ -9,7 +9,12 @@
 # - human readable lines
 # assume sorted entries
 #
-
+# call like
+# 	./loggrep_CGI.pl?from=1611320488&until=1611320542&nodata
+# url options:
+# valued: from until debug sep_mj sep_mn
+# simple: nodata nolines dt_epoc noheader nofooter simplefooter
+#   noheader nohtmltag
 
 use warnings;
 use strict;

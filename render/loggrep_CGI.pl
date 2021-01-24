@@ -25,6 +25,8 @@ use Time::Piece();
 my $logfile = './infini-status.log' ;
 my $dt_format = '%F %T' ;
 
+our %p17;
+require '../P17_def.pl';
 
 # defaults ...
 # my $nolines = 0;
@@ -88,6 +90,8 @@ if ( $do_htmltag ) {
 
 # print Dumper($q) if $debug;
 print Dumper( %q_all_params ) if $debug;
+print Dumper( %p17 ) if $debug;
+
 
 # print "from: $from  ->  " . $dt_from->strftime( $dt_format)  ->  $epc_from \n";
 # print "until $until  ->  " . $dt_until->strftime( $dt_format)  ->  $epc_until \n";

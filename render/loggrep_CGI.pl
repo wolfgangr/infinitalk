@@ -108,6 +108,7 @@ open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!";
 
 my $cnt_start=0;
 my $cnt_lines=0;
+my @laststate =();
 while (<$LOG>) {
 	# 2021-01-21 15:08:53 - status chaged old->new:##,####,######:05,4541,000003
 	my @fields = /^([\d\-]{10} [\d\:]{8})[^:]*:([\d\#\,]{14}):([\d\,]{14})$/ ;
@@ -146,17 +147,12 @@ while (<$LOG>) {
 	next unless ( (scalar @chunks) == 3) ;
 	my ($wm, $ps_2bits, $ws_bits) = @chunks ;
 
-	# print Dumper ( @fields, @chunks) ;
-	# print Dumper ($wm, $ps_2bits, $ws_bits );
-
 	my $ps_2b_x = hex $ps_2bits;
-	# printf ($ps_2b_x
 	my @ps;
 	for (0 .. 7) {
 		unshift @ps, ( $ps_2b_x & 0x03 ) ;
 		$ps_2b_x >>= 2;
 	}
-	# print Dumper (@ps);
 
 	my $ws_x = hex  $ws_bits ;
 	my @ws;
@@ -164,18 +160,25 @@ while (<$LOG>) {
 		unshift @ws , ( $ws_x & 0x01 );
 		$ws_x >>= 1;
 	}
-	# print Dumper (@ws);
 
+	# ----- prepare for printing -------
 	my $mr_ps = join $sep_mn  , @ps;
 	my $mr_ws = join $sep_mn  , @ws;
 	my $mr_rv = join $sep_mj , $dt_line_print,  $wm, $mr_ws, $mr_ps   ; 
 
 	# print "machine readable line : ";
         print	$mr_rv . "\n";
-	# print Dumper ( $dt_line );
-	# print $dt_line->datetime;
-	# last;
+
+	# ------------ what status changed ---------------
+	my @newstate = ( $dt_epoc, $wm,   @ps, @ws ,) ;
+	my %changed =();
+	if (@laststate) {
+		for my $i (1 .. $#laststate) {
+		}
+	}
+	@laststate = @newstate;
 	#===============================
+	print Dumper (@laststate);
 }
 
 unless ( defined $q_all_params{nofooter}) {

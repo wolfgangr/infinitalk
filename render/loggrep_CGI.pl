@@ -15,7 +15,7 @@ use warnings;
 use strict;
 use CGI();
 use Time::Piece();
-# use Data::Dumper::Simple;
+# use Data::Dumper::Simple;  # conditinal on debug - performance killer
 
 my $logfile = './infini-status.log' ;
 my $dt_format = '%F %T' ;
@@ -69,6 +69,9 @@ print "<pre>\n";
 
 print Dumper($q) if $debug;
 
+
+my %q_all_params = $q->Vars ;
+print Dumper( %q_all_params ) if $debug;
 
 print "from: $from  ->  $dt_from  ->  $epc_from \n";
 print "until $until  ->  $dt_until  ->  $epc_until \n";

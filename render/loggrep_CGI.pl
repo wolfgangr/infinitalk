@@ -43,7 +43,7 @@ my $sep_mn = $q->param('sep_mn')  || ',';
 # my $nolines= $q->param('nolines') ||  0;
 # my $nodata = $q->param('nodata')  ||  0;
 
-my $debug  = $q->param('debug')   || 1;
+my $debug  = (defined $q_all_params{debug}) ?  $q->param('debug')  : 1;
 if ($debug) { use Data::Dumper::Simple ;}
 
 
@@ -86,10 +86,12 @@ print Dumper( %q_all_params ) if $debug;
 
 # print "from: $from  ->  " . $dt_from->strftime( $dt_format)  ->  $epc_from \n";
 # print "until $until  ->  " . $dt_until->strftime( $dt_format)  ->  $epc_until \n";
-my $timedebugger = "%s: %s  ->  %s  ->  %d \n";
-printf $timedebugger , 'from ', $from , $dt_from->strftime( $dt_format) ,  $epc_from ;
-printf $timedebugger , 'until', $until, $dt_until->strftime( $dt_format) ,  $epc_until ;
 
+unless (defined $q_all_params{ nopreamble }) {
+	my $timedebugger = "%s: %s  ->  %s  ->  %d \n";
+	printf $timedebugger , 'from ', $from , $dt_from->strftime( $dt_format) ,  $epc_from ;
+	printf $timedebugger , 'until', $until, $dt_until->strftime( $dt_format) ,  $epc_until ;
+}
 
 
 
@@ -113,14 +115,18 @@ while (<$LOG>) {
 	$cnt_lines++;
 	
 	next if ( defined $q_all_params{nolines} ) ;
-
+	#------------------------
+	my $dt_line_print ;
 	if ( defined $q_all_params{dt_epoc}) {
-		print $dt_epoc ;
+		$dt_line_print = $dt_epoc ;
 	} else {
-		print $dt_line->strftime( $dt_format) ;
+		$dt_line_print = $dt_line->strftime( $dt_format) ;
 	}
 
-	if ( defined $q_all_params{nodata}) { print "\n"; next  ; }
+	if ( defined $q_all_params{nodata}) { 
+		print "$dt_line_print\n"; 
+		next  ; 
+	}
 
 
 	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
@@ -153,7 +159,7 @@ while (<$LOG>) {
 
 	my $mr_ps = join $sep_mn  , @ps;
 	my $mr_ws = join $sep_mn  , @ws;
-	my $mr_rv = join $sep_mj , '',  $wm, $mr_ws, $mr_ps   ; 
+	my $mr_rv = join $sep_mj , $dt_line_print,  $wm, $mr_ws, $mr_ps   ; 
 
 	# print "machine readable line : ";
         print	$mr_rv . "\n";

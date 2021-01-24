@@ -181,6 +181,11 @@ $p17{'PS'} = {
 		[ qw ( idle chrg disc   ) ] ,
 		[ qw ( idle AC-DC DC-AC ) ] ,
 		[ qw ( idle inp outp    ) ] 		] ,
+
+	colors => [ (undef) x 16 ,
+		[ qw ( 808080 000088 ) ] x 3 ,
+		[ qw ( 808080 bbbb00 aa00aa ) ] x 3   	] ,
+
 } ;
 
 
@@ -188,7 +193,9 @@ $p17{'MOD'} = {
         tag=>'Working mode ',
 	use=>{ stat=>3 },
         fields=>['mode' ],
-	enums => [ [ qw (pw_on standby bypass batt fault hybrid chrg ) ] ] ,
+	enums  => [ [ qw ( pw_on standby bypass  batt   fault hybrid chrg ) ] ] ,
+	colors => [ [ qw (009933 808080  003399 aa00aa ff0000 884400 bbbb00   ) ] ] ,
+	#                  drkgrn grey	drlbl  mgnt     red     brwn      yellw
 } ;
 
 $p17{'T'} = {
@@ -214,6 +221,7 @@ $p17{'WS'} = {
 		'EPO active', 'AC input wave loss',
        	], 
 	enums => [ [ qw ( OK warn ) ] x 22 ], 
+	colors => [ [ qw ( 009933  b30000 ) ] x 22 ],
 } ;
 
 $p17{'CFS'} = {
@@ -243,6 +251,7 @@ $p17{'EMINFO'} = {
 	# units=>[ '', ('kW') x 4 , '' ],
 	# factors=>[ undef, (0.001) x 4,  ] ,
 	enums => [ [ qw( lo hi ) ], ( undef ) x 4 , [ qw( lo hi ) ] ], 
+	colors => [ [ qw( 990073  000080 ) ], ( undef ) x 4 , [ qw(  990073 000080  ) ] ],
 
 };
 

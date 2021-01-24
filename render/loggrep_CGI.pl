@@ -229,7 +229,9 @@ while (<$LOG>) {
 		for my $i (1 .. $#newstate) {
 			my $lbl = $labelizer_p17[ $i ];
 			my $enm = $lbl->{ 'enum' };
-			printf '<td><nobr><font size="-1">%s</font></nobr></td>', 
+			my $clr = $lbl->{ 'colors' }  ;
+			printf '<td><nobr><font color=#%s size="-1">%s</font></nobr></td>', 
+				$$clr[ $newstate[  $i ] ] || '444444' ,	
 				$$enm[ $newstate[  $i ] ] ;
 		}
 		print "</tr>\n";
@@ -318,6 +320,7 @@ sub p17_reg_field_tagged {
 		tag => $reg->{fields}[$i] ,
 		# fields
 		enum => $reg->{enums}[$i] ,
+		colors => $reg->{colors}[$i] ,
 	}
 
 }

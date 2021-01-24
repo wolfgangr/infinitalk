@@ -13,23 +13,42 @@
 
 use warnings;
 use strict;
-use CGI();
+# use CGI();
 use Time::Piece();
-use Data::Dumper::Simple;
+# use Data::Dumper::Simple;
 
 my $logfile = './infini-status.log' ;
 my $dt_format = '%F %T' ;
 
-my $q=CGI->new;
-print $q->header(-type => 'text/plain' ,
-	-charset => 'utf8' );
+# my $q=CGI->new;
+# print $q->header(-type => 'text/plain' ,
+#	-charset => 'utf8' );
 
-my $from  = $q->param('from' ) || 0;
-my $until = $q->param('until') || time()  ;
-my $dt_from  = Time::Piece->new( $from  );
-my $dt_until = Time::Piece->new( $until );
-my $epc_from  = $dt_from->epoch ;
-my $epc_until = $dt_until->epoch ;
+# my $from  = $q->param('from' ) || 0;
+# my $until = $q->param('until') || time()  ;
+# my $dt_from  = Time::Piece->new( $from  );
+# my $dt_until = Time::Piece->new( $until );
+# my $epc_from  = $dt_from->epoch ;
+# my $epc_until = $dt_until->epoch ;
+
+my $nolines = 0;
+my $nodata = 0;
+my ( $from, $until);
+while ( my $arg = shift @ARGV) {
+	if ( $arg =~ /nolines/  ) { $nolines = 1  ; next }
+	if ( $arg =~ /nodata/   ) { $nodata  = 1  ; next }
+	unless ( $from  ) { $from    = $arg  ; next }
+	unless ( $until ) { $until   = $arg  ; next }
+	die "K.I.S.S.:   rtfS";
+}
+
+
+# my $epc_from  = $from  = 0;
+# my $epc_until = my $until = time()  ;
+unless (defined $from)  { $from  = 0 } 
+unless (defined $until) { $until = time() }
+
+
 
 # print "from: $from  ->  $dt_from  ->  $epc_from \n";
 # print "until $until  ->  $dt_until  ->  $epc_until \n";
@@ -51,13 +70,19 @@ while (<$LOG>) {
 	# select time interval
 	unless($cnt_lines) {	
 		$cnt_start++;
-		next if ( (my $dt_epoc = $dt_line->epoch ) < $epc_from ) ;
+		next if ( (my $dt_epoc = $dt_line->epoch ) < $from ) ;
 	}
-	last if ( (my $dt_epoc = $dt_line->epoch ) > $epc_until ) ;
+	last if ( (my $dt_epoc = $dt_line->epoch ) > $until ) ;
 	$cnt_lines++;
 
+	next if $nolines ;
 	# print " line date is " . $dt_line->datetime .' -> '. $dt_epoc  ."\n";
 	# comparations to go here ======================= TODO
+
+	# oputput time in seconds
+	print $dt_epoc;  
+
+	if ($nodata) { print "\n" ; next }
 
 	# my $newstate = sprintf "%02x,%04x,%06x", $wm , $ps_2bits, $ws_bits ;
 	my @chunks = split ',', $fields[2];
@@ -86,22 +111,25 @@ while (<$LOG>) {
 
 	my $mr_ps = join ',' , @ps;
 	my $mr_ws = join ',' , @ws;
-	my $mr_rv = join ';', $dt_epoc, $wm, $mr_ws, $mr_ps   ; 
+	# my $mr_rv = join ';',  $wm, $mr_ws, $mr_ps   ; 
 
-	print "machine readable line : " . $mr_rv . "\n";
+	# print "machine readable line : ";
+        printf ";%s;%s;%s\n" , $wm, $mr_ps, $mr_ws;
 	# print Dumper ( $dt_line );
 	# print $dt_line->datetime;
 	# last;
 	#===============================
+	
 }
 
 
-printf " -- DONE -- matching lines: start=%d , count=%d\n", $cnt_start, $cnt_lines  ;
+# printf " -- DONE -- matching lines: start=%d , count=%d\n", $cnt_start, $cnt_lines  ;
+print $cnt_start .' '. $cnt_lines ;
 
 close $LOG ;
 
 # DEBUG ($q, $from , $until ) ;
-print "~~~~~~~~~~~~~<br><hr>END\n";
+# print "~~~~~~~~~~~~~<br><hr>END\n";
 
 
 

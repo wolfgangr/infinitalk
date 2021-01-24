@@ -24,8 +24,6 @@ my $dt_format = '%F %T' ;
 # defaults ...
 my $nolines = 0;
 my $nodata = 0;
-my $sep_mj =';';
-my $sep_mn =',';
 
 #-- end of config ---------
 
@@ -51,8 +49,14 @@ my $epc_until = $dt_until->epoch ;
 
 # ------------- start output
 #
-print $q->header(-type => 'text/plain' ,
-        -charset => 'utf8' );
+# print $q->header(-type => 'text/plain' ,
+#         -charset => 'utf8' );
+
+print $q->header(-type => 'text/html' ,
+         -charset => 'utf8' );
+ print $q->start_html(-title => 'infini status change log grepper');
+
+ print "<pre>\n";
 
 
 print "from: $from  ->  $dt_from  ->  $epc_from \n";
@@ -128,8 +132,8 @@ close $LOG ;
 
 # DEBUG ($q, $from , $until ) ;
 # print "~~~~~~~~~~~~~<br><hr>END\n";
-
-
+print "\n</pre>";
+print $q->end_html();
 
 
 exit;

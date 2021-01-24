@@ -30,18 +30,33 @@ my $sep_mn =',';
 #-- end of config ---------
 
 my $q=CGI->new;
-print $q->header(-type => 'text/plain' ,
-	-charset => 'utf8' );
+# print $q->header(-type => 'text/plain' ,
+# 	-charset => 'utf8' );
 
 my $from  = $q->param('from' ) || 0;
 my $until = $q->param('until') || time()  ;
+
+my $sep_mj =';';
+my $sep_mn =',';
+
+
+
+# eval time params - 
 my $dt_from  = Time::Piece->new( $from  );
 my $dt_until = Time::Piece->new( $until );
 my $epc_from  = $dt_from->epoch ;
 my $epc_until = $dt_until->epoch ;
 
-# print "from: $from  ->  $dt_from  ->  $epc_from \n";
-# print "until $until  ->  $dt_until  ->  $epc_until \n";
+
+
+# ------------- start output
+#
+print $q->header(-type => 'text/plain' ,
+        -charset => 'utf8' );
+
+
+print "from: $from  ->  $dt_from  ->  $epc_from \n";
+print "until $until  ->  $dt_until  ->  $epc_until \n";
 
 
 

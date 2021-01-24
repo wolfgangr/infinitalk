@@ -16,11 +16,12 @@
 
 use warnings;
 use strict;
+use Cwd  qw( abs_path );
 # use CGI();
 use Time::Piece();
 # use Data::Dumper::Simple;
 
-my $logfile = './infini-status.log' ;
+my @logfiles = qw ( ./infini-status.log ./infini-status.log.1  ) ;
 my $dt_format = '%F %T' ;
 
 # my $q=CGI->new;
@@ -68,9 +69,10 @@ unless (defined $until) { $until = time() }
 # print "until $until  ->  $dt_until  ->  $epc_until \n";
 
 
-
-
-open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!"; 
+my $cat = `which cat` or die "canot locate cat executable";
+chomp $cat ;
+my $logcmd = $cat .  '  ' . join ' ' , map { abs_path($_)     }  @logfiles;
+open ( my $LOG , '-|', $logcmd ) or die "cannot open $logcmd : $!"; 
 
 my $cnt_start=0;
 my $cnt_lines=0;

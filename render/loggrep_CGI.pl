@@ -20,9 +20,13 @@ use warnings;
 use strict;
 use CGI();
 use Time::Piece();
+use Cwd  qw( abs_path );
+
+
 # use Data::Dumper::Simple;  # conditinal on debug - performance killer
 
-my $logfile = './infini-status.log' ;
+# my $logfile = './infini-status.log' ;
+my @logfiles = qw ( ./infini-status.log ./infini-status.log.1  ) ;
 my $dt_format = '%F %T' ;
 
 our %p17;
@@ -128,8 +132,12 @@ if (defined $q_all_params{htmltab}) {
 	print '</tr>';
 }
 
-
-open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!"; 
+# cocatenate different logrotate generations, if exist
+my $cat = `which cat` or die "canot locate cat executable";
+chomp $cat ;
+my $logcmd = $cat .  '  ' . join ' ' , map { abs_path($_) } @logfiles;
+open ( my $LOG , '-|', $logcmd ) or die "cannot open $logcmd : $!"; 
+# open ( my $LOG , '<', $logfile ) or die "cannot open $logfile : $!"; 
 
 my $cnt_start=0;
 my $cnt_lines=0;

@@ -184,9 +184,21 @@ while (<$LOG>) {
 		# @changed =  diff_ary2D( \@newstate, \@laststate)      ;
 		@changed = map { $newstate[$_] - $laststate[$_]    } (0 .. $#newstate );
 	}
+
+	for my $i ( grep { $changed[$_] } (1 .. $#changed) ) {
+		my $lbl = $labelizer_p17[ $i ];
+		my $enm = $lbl->{ 'enum' };
+		printf "\treg %s ( %s : %s ) changed %s -> %s \n", 
+			$lbl->{ 'parent' }, $lbl->{ 'p_tag' }, $lbl->{ 'tag' },
+			$$enm[ $laststate[ $i ] ] , 
+			$$enm[ $newstate[  $i ] ] ;
+
+	}
+
+	print Dumper ( @newstate, @changed, @laststate) if $debug ;
 	@laststate = @newstate;
 	#===============================
-	print Dumper (@laststate, @changed);
+	# print Dumper (@laststate, @changed);
 }
 
 unless ( defined $q_all_params{nofooter}) {

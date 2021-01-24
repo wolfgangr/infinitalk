@@ -22,8 +22,8 @@ my $dt_format = '%F %T' ;
 
 
 # defaults ...
-my $nolines = 0;
-my $nodata = 0;
+# my $nolines = 0;
+# my $nodata = 0;
 
 #-- end of config ---------
 
@@ -31,12 +31,16 @@ my $q=CGI->new;
 # print $q->header(-type => 'text/plain' ,
 # 	-charset => 'utf8' );
 
-my $from  = $q->param('from' ) || 0;
-my $until = $q->param('until') || time()  ;
+my $from   = $q->param('from' )   || 0;
+my $until  = $q->param('until')   || time()  ;
 
-my $sep_mj =';';
-my $sep_mn =',';
+my $sep_mj = $q->param('sep_mj')  || ';';
+my $sep_mn = $q->param('sep_mn')  || ',';
+my $nolines= $q->param('nolines') ||  0;
+my $nodata = $q->param('nodata')  ||  0;
 
+my $debug  = $q->param('debug')   || 1;
+if ($debug) { use Data::Dumper::Simple ;}
 
 
 # eval time params - 
@@ -52,11 +56,18 @@ my $epc_until = $dt_until->epoch ;
 # print $q->header(-type => 'text/plain' ,
 #         -charset => 'utf8' );
 
+
+my $html_title = sprintf 'infini status change %s to  %s', 
+	$dt_from->strftime( $dt_format) ,  $dt_until->strftime( $dt_format)  ;
+
 print $q->header(-type => 'text/html' ,
          -charset => 'utf8' );
- print $q->start_html(-title => 'infini status change log grepper');
+print $q->start_html(-title => $html_title);
+print "<pre>\n";
 
- print "<pre>\n";
+#---------------
+
+print Dumper($q) if $debug;
 
 
 print "from: $from  ->  $dt_from  ->  $epc_from \n";

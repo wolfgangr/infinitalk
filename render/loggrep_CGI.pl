@@ -32,6 +32,12 @@ require '../P17_def.pl';
 # my $nolines = 0;
 # my $nodata = 0;
 
+
+
+# array of P17 defs matching retrieved status array
+my @labelizer_p17 = labelizer();
+
+
 #-- end of config ---------
 
 my $q=CGI->new;
@@ -91,7 +97,7 @@ if ( $do_htmltag ) {
 # print Dumper($q) if $debug;
 print Dumper( %q_all_params ) if $debug;
 print Dumper( %p17 ) if $debug;
-
+print Dumper(@labelizer_p17 )  if $debug;
 
 # print "from: $from  ->  " . $dt_from->strftime( $dt_format)  ->  $epc_from \n";
 # print "until $until  ->  " . $dt_until->strftime( $dt_format)  ->  $epc_until \n";
@@ -170,11 +176,13 @@ while (<$LOG>) {
         print	$mr_rv . "\n";
 
 	# ------------ what status changed ---------------
-	my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
+	# my @newstate = ( [ $dt_epoc ], [  $wm ],  \@ps, \@ws ,) ;
+	my @newstate = (  $dt_epoc ,   $wm ,  @ps, @ws ) ;
 	my @changed =();
 	my $ccnt =0;
 	if (@laststate) {
-		@changed =  diff_ary2D( \@newstate, \@laststate)      ;
+		# @changed =  diff_ary2D( \@newstate, \@laststate)      ;
+		@changed = map { $newstate[$_] - $laststate[$_]    } (0 .. $#newstate );
 	}
 	@laststate = @newstate;
 	#===============================
@@ -215,4 +223,42 @@ sub diff_ary2D {
 		push @C, \@c ;
 	}
 	return @C;
+}
+
+
+
+# here is the other end of the pipeline:
+# https://github.com/wolfgangr/infinitalk/blob/710f2a6f3ae19491d0b2a0345e191ca6502794bd/scheduler.pl#L357
+# # warn status 21 bits - littleendian - hope this works....
+#    my @ws_ary =   @{$res{'WS'}[2]};
+#
+#       # power status: last 6 fields of PS and field 1, 5 of EMINFO in littleendian
+#      my @ps_ary = ( @{$res{'PS'}[2]}[-6 .. -1], @{$res{'EMINFO'}[2]}[0,5] ); 
+#      # work mode: int 0 ... 6
+#     my $wm = $res{'MOD'}[2][0] ;
+
+sub labelizer {
+	# our %p17
+	my @rv;
+	push @rv, { tag => 'time'  };
+	push @rv, p17_reg_field_tagged ( 'MOD'   , 0 );
+	for (16..21) { push @rv, p17_reg_field_tagged ( 'PS' , $_ ); }
+	push @rv, p17_reg_field_tagged ( 'EMINFO' , 0 );
+	push @rv, p17_reg_field_tagged ( 'EMINFO' , 5 );
+	for (0..21)  { push @rv, p17_reg_field_tagged ( 'WS' , $_ ); } 
+	return @rv;
+}
+
+# %p17 etracted tagger = p17_reg_field_tagged ( $registerflag, $field_index )
+sub p17_reg_field_tagged {
+	my ($rtag, $i) = @_;
+	my $reg = $p17{$rtag} ;
+	return {
+		parent => $rtag,
+		p_tag => $reg->{tag},
+		tag => $reg->{fields}[$i] ,
+		# fields
+		enum => $reg->{enums}[$i] ,
+	}
+
 }

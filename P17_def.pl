@@ -213,6 +213,7 @@ $p17{'WS'} = {
 		'Over temperature', 'Over load',
 		'EPO active', 'AC input wave loss',
        	], 
+	enums => [ [ qw ( OK warn ) ] x 22 ], 
 } ;
 
 $p17{'CFS'} = {
@@ -235,12 +236,13 @@ $p17{'GLTHV'} = {
 $p17{'EMINFO'} = {
 	tag=>'Energy Management info'  ,
 	use=>{ stat=>7, em=>1, es=>3, },
-	fields=>[ '', 'default Feed-In power', 'actual PV-Power', 
-		'actual Feed-In power', 'actual reserved Hybrid power', '' ] ,
+	fields=>[ '?1', 'default Feed-In power', 'actual PV-Power', 
+		'actual Feed-In power', 'actual reserved Hybrid power', '?2' ] ,
 	units=>[ '', ('W') x 4 , '' ],
 	factors=>[ undef, (1) x 4,  ] ,
 	# units=>[ '', ('kW') x 4 , '' ],
 	# factors=>[ undef, (0.001) x 4,  ] ,
+	enums => [ [ qw( foo bar ) ], ( undef ) x 4 , [ qw( foo bar ) ] ], 
 
 };
 

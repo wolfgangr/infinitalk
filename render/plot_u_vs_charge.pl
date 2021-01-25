@@ -18,7 +18,10 @@ use Cwd 'abs_path'   ;
 
 my ( $usage , $usage_long );
 my $debug_default = 3;
-my $test_rrd = '/home/wrosner/infini/parsel/infini.rrd';
+my $rrd1 = '/home/wrosner/infini/parsel/infini.rrd';
+my $rrd2 = '/home/wrosner/infini/parsel/status.rrd';
+my $cf =  'AVERAGE' ;
+
 my $dt_format = '%F %T' ;
 my $tempfile_prefix="../tmp/plot/plot-";
 
@@ -28,60 +31,22 @@ my %q_all_params = $q->Vars ;
 our $debug  = (defined $q_all_params{debug}) ?  $q->param('debug')  : $debug_default ;
 if ($debug) { use Data::Dumper::Simple ;}
 
-
-my $rrd =    $test_rrd ; 
-my $cf =  'AVERAGE' ; 
-
-# my $usage = "usage todo";
-# my $usage_long = "comprehensive usage todo";
-
-
-# my_die (' missing parameters ' , $usage) unless %q_all_params ;
-# my_die (' usage instructions: ' , $usage_long) 
-# 	if (defined $q_all_params{help}  or  defined $q_all_params{keywords}    ) ;
-
-# die "$usage" unless $rrdfile;
-# die "$usage_long" if ( ! ($cf) ) or $rrdfile eq '-h' or $cf eq '-h' ;
-
-# my $retval = getopts('s:e:tT:HMx:d:r:af:HMv:V:hz:')  ;
-# die "$usage" unless ($retval) ;
-# die "$usage_long" if $opt_h  ;
-
 my $start  = $q->param('start')  || 'e-1d';
 my $end    = $q->param('end')  || 'n';
-my $header = (defined $q_all_params{ header }) ;
-my $hl_timetag =  $q->param('time') || 'time' ;
-my $sep    = $q->param('sep')  || ' ' ; 
-my $delim  = $q->param('delim')  || '';
-my $align  = (defined $q_all_params{ align }) ;
-my $res    = $q->param('step') || 0  ;
-my $outfile = $q->param('out') || ''   ;
-# $debug = $opt_v unless $opt_v eq ''; 
+my $res = 5 ; # both rrd are configured that way
 
-# my $valid_rows = 1 ;
-# unless  ($opt_V eq '') {  $valid_rows = $opt_V ;  }
-
-my $valid_rows = (defined $q_all_params{ valid_rows })  ? $q->param('valid_rows') : 1 ;
+# replace cgi params by fixed settings
+my $rrdfile = $rrd1 ; # TODO
+my $align = 1;
+my $valid_rows = -1 ;
+my $delim ='';
+my $sep = '  ' ;
+my $outfile = '';
 
 
+my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 , $rrd2 ,  $q )) if $debug ;
 
-
-
-# after this header we may print pretty much anything
-# print $q->header(-type =>  $ct,  -charset => 'utf8' );
-
-# my $rrdfile = "noclue";
-# debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
-# 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
-
-print Dumper ($q) if  $debug >=3 ;
-
-# my $rrdfile = abs_path($rrd);
-my $rrdfile = `ls $rrd`;
-chomp $rrdfile;
-# print Dumper ($rrd, $rrdfile);
-
-print Dumper ($rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      ) if $debug >=3 ;
+# print Dumper ($rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      ) 
 
 # collect parameters for database call
 my @paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);

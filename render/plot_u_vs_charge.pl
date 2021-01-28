@@ -74,6 +74,8 @@ my $i_I = first { $$names[$_] eq 'I_batt'  }  (0..$#$names);
 
 
 my_die ( scalar  Dumper ( RRDs::error, $rrd_start,$step, $names, $datlen , $dt_hr, $i_U , $i_I  )) if $debug  ;
+my_die ( "could not find  \$i_U or \$i_I field" ,  $i_U ,$i_I ) unless ((defined $i_U) and (defined $i_I) );
+
 
 # my $i_U = first { $array[$_] eq 'whatever' } 0..$#array;
 
@@ -125,27 +127,39 @@ if ( defined $q_all_params{test} ) {
 
 	# $command .= "plot sin(x)";
 	# $command .= "plot '-' axes x2y1";
+	# plot '-'  using (cumulative_sum(\$4)):(\$2)
 	my $cusm = <<"EOCUSM";
 a=0
 cumulative_sum(x) = (a=a+x,a)
-plot '-'  using (cumulative_sum(\$4)):(\$2)
+plot '-'  using 1:2
 EOCUSM
 	
 	# $command .= "plot '-'  using (\$2):(\$4) ";
-	$command .= $cusm ;
+	# $command .= $cusm ;
+	$command .= "plot '-'  using (\$1):(\$2) ";
 	$command .="\n";
 }
 
 my $cumulAh = 0;
+my $last_I=0; 
 # my $timezone = main loop over data rows, we count by index to keep close to metal
 for my $rowcnt (0 .. $#$data ) {
    my $datarow = $$data[ $rowcnt ];			# the real data
    my $rowtime = $rrd_start + $rowcnt * $step;		# time is calculated
 
+   my $U_batt  = $$datarow[ $i_U]  ;
+   my $I_batt  = $$datarow[ $i_I] ;
+   $last_I = $I_batt+0 if (defined $I_batt );
+   $cumulAh += $last_I *( $step /  3600)  ;
+
+   next unless ((defined $U_batt) and (defined $I_batt) );
+
+   # my $cumulAh += $I_batt * $step / 3600 ; # integrate overs tep interval and convert to hrs
+   # next unless (defined $U_batt and defined $I_batt );
    # skip for data row's with too many NaN s
-   my $defcnt = 0 ;
-   foreach ( @$datarow )  {  $defcnt++ if defined $_ }
-   next unless ($defcnt >= 2) ;
+   # my $defcnt = 0 ;
+   # foreach ( @$datarow )  {  $defcnt++ if defined $_ }
+   # next unless ($defcnt >= 2) ;
 
    # time string format selection
    my $timestring;
@@ -163,7 +177,9 @@ for my $rowcnt (0 .. $#$data ) {
    }
 
    # my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
-   my $dataline = join ( ' ' , $timestring, @$datarow ) ;
+   # my $dataline = join ( ' ' , $timestring, @$datarow ) ;
+   # my $dataline = join ( ' ' , $cumulAh, $U_batt);
+   my $dataline = sprintf ('%f %f',  $cumulAh , $U_batt);
    $command .= $dataline . "\n";
 } 
 

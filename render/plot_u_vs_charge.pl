@@ -45,7 +45,7 @@ my $outfile = '';
 
 
 my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 , $rrd2 ,  $q )) if $debug ;
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ cuting edge ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # print Dumper ($rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      ) 
 
 # collect parameters for database call
@@ -157,31 +157,6 @@ EOCUSM
 	
 	# $command .= "plot '-'  using (\$2):(\$4) ";
 	$command .= $cusm ;
-
-
-
-	my $dummy = <<"EOFPLOT" ;	
-plot '-' axes x2y1
-1 1
-1 19
-19 19
-19 1
-2  2
-e
-1     1
-2     4
-3     9
-4    16
-e
-5    25
-6    36
-7    49
-8    64
-9    81
-10  100
-e
-EOFPLOT
-
 	$command .="\n";
 
 	# my_die ( Dumper ($q)) ;
@@ -196,38 +171,6 @@ EOFPLOT
 # 76 76.9091 78 2016-12-30 19:00:00
 # 79 81.3684 84 2016-12-30 20:00:00
 # 84 84.5152 85 2016-12-30 21:00:00
-goto DATA;
-
-RENDER:
-open ( GNUPLOT, "| $gnuplot > $templog 2>&1" ) or my_die ("cannot open gnuplot")   ;
-print GNUPLOT $command    or my_die  ("cannot send data to gnuplot") ;
-close GNUPLOT || gnuploterror($command, $templog);
-
-print "Content-type: image/png\n\n";
-print `cat -u $temppng`;   
-
-exit;   # leave the stuff for debugging
-
-unlink $temppng;        # don't check for an error any more
-unlink $tempdata;
-unlink $templog;
-
-
-exit;
-
-#~~~~~~~~~~~~~~~~ cutting edge BOTTOM in boiler plate ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# debug_printf ( 3, "opened output file: %s\n", $outfile );
-
-# conditional header - see -t option
-#
-# if ($header) {
-#    my $titleline = my_join ( $delim, $sep, $hl_timetag , @$names) ;
-#    print  OF $titleline . "\n";
-# }
-
-DATA:
-# exit;
 # my $timezone = main loop over data rows, we count by index to keep close to metal
 for my $rowcnt (0 .. $#$data ) {
    my $datarow = $$data[ $rowcnt ];			# the real data
@@ -259,7 +202,22 @@ for my $rowcnt (0 .. $#$data ) {
 
 # close OF if ( $outfile) ;
 
-goto RENDER;
+# goto RENDER;
+
+# RENDER:
+open ( GNUPLOT, "| $gnuplot > $templog 2>&1" ) or my_die ("cannot open gnuplot")   ;
+print GNUPLOT $command    or my_die  ("cannot send data to gnuplot") ;
+close GNUPLOT || gnuploterror($command, $templog);
+
+print "Content-type: image/png\n\n";
+print `cat -u $temppng`;   
+
+exit;   # leave the stuff for debugging
+
+unlink $temppng;        # don't check for an error any more
+unlink $tempdata;
+unlink $templog;
+
 
 exit ;
 

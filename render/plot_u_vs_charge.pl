@@ -14,7 +14,7 @@ use CGI();
 use Time::Piece();
 use  RRDs;
 use Cwd 'abs_path'   ;
-
+use List::Util qw(first);
 
 my ( $usage , $usage_long );
 # my $usage = '';
@@ -68,13 +68,14 @@ my $dt = Time::Piece->new( $rrd_start);
 # shall we keep timezoning?
 # $dt->tzoffset = $q->param('tzoffset' ) if defined $q_all_params{ 'tzoffset' } ;
 my $dt_hr = $dt->strftime($dt_format) ;
-my_die ( scalar  Dumper ( RRDs::error, $rrd_start,$step, $names, $datlen , $dt_hr )) if $debug  ;
 
-# my $dump = Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr );
-# my_die ( scalar Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr ) );
+my $i_U = first { $$names[$_] eq 'U_batt'  }  (0..$#$names);
+my $i_I = first { $$names[$_] eq 'I_batt'  }  (0..$#$names);
 
-# pre-process -V option ... valid rows - map the complement format
-# if ( $valid_rows < 0 ) { $valid_rows = $#$names + $valid_rows +1 ; }
+
+my_die ( scalar  Dumper ( RRDs::error, $rrd_start,$step, $names, $datlen , $dt_hr, $i_U , $i_I  )) if $debug  ;
+
+# my $i_U = first { $array[$_] eq 'whatever' } 0..$#array;
 
 
 # ~~~~~~~~~~~~~~~~~~ prep plot cmd header ~~~~~~~~~~
@@ -135,7 +136,7 @@ EOCUSM
 	$command .="\n";
 }
 
-
+my $cumulAh = 0;
 # my $timezone = main loop over data rows, we count by index to keep close to metal
 for my $rowcnt (0 .. $#$data ) {
    my $datarow = $$data[ $rowcnt ];			# the real data

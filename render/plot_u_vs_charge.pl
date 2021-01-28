@@ -114,29 +114,13 @@ if ( defined $q_all_params{test} ) {
 	$command .= "set timestamp \"\%d.\%m.\%Y \%H:\%M\"\n";
 	$command .= "set ylabel \"U (batt) in V \"\n";
 	$command .= "set title \"infini LTO energy cycle\" \n";
-
-
-	if ( defined $q_all_params{ grid } ) {
-		$command .= "set grid\n";
-	}
-
+	$command .= "set grid\n";
 
 	$command .= "set style data lines\n";
-	$command .= "set xlabel \"cumul Ah TODO \"\n";
+	$command .= "set xlabel \"cumul Ah \"\n";
 
-
-	# $command .= "plot sin(x)";
-	# $command .= "plot '-' axes x2y1";
-	# plot '-'  using (cumulative_sum(\$4)):(\$2)
-	my $cusm = <<"EOCUSM";
-a=0
-cumulative_sum(x) = (a=a+x,a)
-plot '-'  using 1:2
-EOCUSM
-	
-	# $command .= "plot '-'  using (\$2):(\$4) ";
-	# $command .= $cusm ;
-	$command .= "plot '-'  using (\$1):(\$2) ";
+	# $command .= "plot '-'  using (\$1):(\$2) ";
+	$command .= "plot '-'   using 1:2  title '' ";
 	$command .="\n";
 }
 

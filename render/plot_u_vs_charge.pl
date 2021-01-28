@@ -25,8 +25,9 @@ my $rrd1 = '/home/wrosner/infini/parsel/infini.rrd';
 # my $rrd2 = '/home/wrosner/infini/parsel/status.rrd';
 my $cf =  'AVERAGE' ;
 
-my $dt_format = '%FT%T' ;
-# my $dt_format = "%m/%d/%yT%H:%M:%S";
+my $dt_format = '%F %T' ;
+# my $dt_format = "%m/%d/%y-%H:%M";
+# my $dt_format = "%Y-%m-%dT%H:%M:%S";
 my $tempfile_prefix="../tmp/plot/plot-";
 
 
@@ -64,6 +65,7 @@ my ($rrd_start,$step,$names,$data)  = RRDs::fetch (@paramlist);
 
 my $namlen = $#$names;
 my $datlen = $#$data;
+my $rrd_end = $rrd_start + $datlen * $step;
 
 my $dt = Time::Piece->new( $rrd_start);
 # shall we keep timezoning?
@@ -110,22 +112,38 @@ if ( defined $q_all_params{test} ) {
 	$command = $testcmd ;
 } else {
 	$command= "set term png";
+	$command .= " size 800,600 ";
 	$command .= "\n";
 	$command .="set output \"$temppng\"\n";
 	$command .= "set timestamp \"\%d.\%m.\%Y \%H:\%M\"\n";
 	$command .= "set ylabel \"U (batt) in V \"\n";
-	$command .= "set title \"infini LTO energy cycle\" \n";
+	# $command .= "set title \"infini LTO energy cycle\" \n";
 	$command .= "set grid\n";
 
 	$command .= "set style data lines\n";
 	$command .= "set xlabel \"cumul Ah \"\n";
 
+
+	my $dtstart = Time::Piece->new($rrd_start);
+	my $dtend = Time::Piece->new($rrd_end);
+
+	$command .= sprintf "set title \"infini LTO energy cycle: [%s] .. [%s]\" \n", 
+		$dtstart->strftime($dt_format ), $dtend->strftime($dt_format ) ;
+
 	# $command .= "plot '-'  using (\$1):(\$2) ";
-	$command .= "set palette model RGB \defined (0 'yellow' , 1 'orange', 2 'red', 3 'magenta' , 4 'blue', 5 'green')\n";
+	$command .= "set palette model RGB defined (0 'gold' , 1 'orange', 2 'red', 3 'magenta' , 4 'blue', 5 '#00e000')\n";
 	$command .= "set zdata time\n";
+	# $command .= "unset colorbox\n";
+	$command .= "unset cbtics\n";
+	# maybe rtfm pg 120 "color box" might help
+	#   "The axis of the color box is called cb and it is controlled by means of the usual axes commands, "
 	# $command .= "set key off\n";
-	$command .= "unset key \n";
-	# $command .= "set timefmt '$dt_format' \n";
+	# $command .= "unset key \n";
+	# $coommand .= "set timefmt '$dt_format' \n";
+	# $command .= sprintf "set cbrange ['%s':'%s']\n", $dtstart->strftime($dt_format ), $dtend->strftime($dt_format ) ;
+	# $command .= " foo bar\n";
+
+
 	$command .= "plot '-'   using 1:2:3  title '' w l lc palette \n";
 	# $command .="\n";
 }
@@ -159,7 +177,7 @@ for my $rowcnt (0 .. $#$data ) {
    $timestring = sprintf "%s" , $rowtime ;
    # $dt_format 
 
-   my $dataline = sprintf ('%f %f %s',  $cumulAh , $U_batt, $timestring );
+   my $dataline = sprintf ("%f %f %s",  $cumulAh , $U_batt, $timestring );
    $command .= $dataline . "\n";
 } 
 

@@ -36,7 +36,7 @@ my $end    = $q->param('end')  || 'n';
 my $res = 5 ; # both rrd are configured that way
 
 # replace cgi params by fixed settings
-my $rrdfile = $rrd1 ; # TODO
+# my $rrdfile = $rrd1 ; # TODO
 my $align = 1;
 my $valid_rows = -1 ;
 my $delim ='';
@@ -49,7 +49,7 @@ my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 , $rrd2 ,  $q )) if $deb
 # print Dumper ($rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      ) 
 
 # collect parameters for database call
-my @paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);
+my @paramlist = ($rrd1, $cf, '-s', $start, '-e', $end);
 push @paramlist, '-a' if $align ;
 push @paramlist, ('-r', $res ) if $res ; 
 
@@ -71,26 +71,10 @@ print  Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr ) if $d
 # my_die ( scalar Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr ) );
 
 # pre-process -V option ... valid rows - map the complement format
-# print  Dumper ('before' , $valid_rows);
 if ( $valid_rows < 0 ) { $valid_rows = $#$names + $valid_rows +1 ; }
-# print  Dumper ('after' , $valid_rows);
 
-# debug_printf (3, "total cols: %d - lower limit for valid Data points per row : %d \n ", $#$names , $valid_rows );
 
-# exit;
-# ---- do your work ----
-#
-if ( $outfile) {
-  open (OF , '>' ,   $outfile)  or die "$! \n could not open $outfile for writing"; 
-} else {
-  # way to redirect OF to STDOUT
-  *OF = *STDOUT;
-}
-
-#~~~~~~~~~~~~~~~~ cutting edge TOP in boiler plate ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-# plot interface recycled from
-# https://github.com/wolfgangr/sqlplot/blob/master/sqlplot.cgi
+# ~~~~~~~~~~~~~~~~~~ prep plot cmd header ~~~~~~~~~~
 
 # $gnuplot = "/usr/bin/gnuplot";
 my $gnuplot = `which gnuplot`  or my_die ("gnuplot executable not found - installed?")   ;
@@ -118,24 +102,12 @@ if ( defined $q_all_params{test} ) {
 # if (1) {
 	$command = $testcmd ;
 } else {
-	my @defcol =('eeeeee','000000','000000',
-	      '0000ff','ff0000','44ff44','ffff00','ff00ff','44ffff');
 	$command= "set term png";
-
-
-	for my $i ('b','e','a',(1..9)) {
-		my $tmp = shift(@defcol);
-		if ($q->param("color$i")) { $tmp =$q->param("color$i");}
-			# fixme#####
-			#  see https://sourceforge.net/p/gnuplot/bugs/1155/
-			# they changed the color format :-(
-			# if ($tmp) { $command .= " x$tmp"; }
-	}
 	$command .= "\n";
 	$command .="set output \"$temppng\"\n";
 	$command .= "set timestamp \"\%d.\%m.\%Y \%H:\%M\"\n";
-	$command .= "set ylabel \"FOO\"\n";
-	$command .= "set title \"PIPAPO\" \n";
+	$command .= "set ylabel \"cumul As \"\n";
+	$command .= "set title \"infini LTO energy cycle\" \n";
 
 
 	if ( defined $q_all_params{ grid } ) {
@@ -144,7 +116,7 @@ if ( defined $q_all_params{test} ) {
 
 
 	$command .= "set style data lines\n";
-	$command .= "set xlabel \"tralala\"\n";
+	$command .= "set xlabel \"U_pack in V\"\n";
 
 
 	# $command .= "plot sin(x)";
@@ -158,19 +130,9 @@ EOCUSM
 	# $command .= "plot '-'  using (\$2):(\$4) ";
 	$command .= $cusm ;
 	$command .="\n";
-
-	# my_die ( Dumper ($q)) ;
-	# my_die ( $command , "DEBUG");
-	# my_die ("hit the ground", "================ GAME OVER ==================");
 }
 
 
-# wrosner@cleo3:~$ cat /var/www/tmp/sqlplot/plot-1487902327.data
-# 76 76 76 2016-12-30 17:00:00
-# 76 77.3077 78 2016-12-30 18:00:00
-# 76 76.9091 78 2016-12-30 19:00:00
-# 79 81.3684 84 2016-12-30 20:00:00
-# 84 84.5152 85 2016-12-30 21:00:00
 # my $timezone = main loop over data rows, we count by index to keep close to metal
 for my $rowcnt (0 .. $#$data ) {
    my $datarow = $$data[ $rowcnt ];			# the real data

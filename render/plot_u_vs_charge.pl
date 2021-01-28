@@ -25,7 +25,8 @@ my $rrd1 = '/home/wrosner/infini/parsel/infini.rrd';
 # my $rrd2 = '/home/wrosner/infini/parsel/status.rrd';
 my $cf =  'AVERAGE' ;
 
-my $dt_format = '%F %T' ;
+my $dt_format = '%FT%T' ;
+# my $dt_format = "%m/%d/%yT%H:%M:%S";
 my $tempfile_prefix="../tmp/plot/plot-";
 
 
@@ -120,8 +121,13 @@ if ( defined $q_all_params{test} ) {
 	$command .= "set xlabel \"cumul Ah \"\n";
 
 	# $command .= "plot '-'  using (\$1):(\$2) ";
-	$command .= "plot '-'   using 1:2  title '' ";
-	$command .="\n";
+	$command .= "set palette model RGB \defined (0 'yellow' , 1 'orange', 2 'red', 3 'magenta' , 4 'blue', 5 'green')\n";
+	$command .= "set zdata time\n";
+	# $command .= "set key off\n";
+	$command .= "unset key \n";
+	# $command .= "set timefmt '$dt_format' \n";
+	$command .= "plot '-'   using 1:2:3  title '' w l lc palette \n";
+	# $command .="\n";
 }
 
 my $cumulAh = 0;
@@ -147,23 +153,13 @@ for my $rowcnt (0 .. $#$data ) {
 
    # time string format selection
    my $timestring;
+   # my $dtr = Time::Piece->new($rowtime);
+   # $timestring =  $dtr->strftime($dt_format );
 
-   if ( defined $q_all_params{mysqltime} ) {
-      my $dtr = Time::Piece->new($rowtime); 
-      # mysql datetime format YYYY-MM-DD HH:MM:SS
-      $timestring =  sprintf ( "%s %s", $dtr->ymd , $dt->hms ) ;
-   } elsif ( defined $q_all_params{humantime} ) {   #   (  ) {  
-      # human readable datetime e.g. 22.12.2020-05:00:00 , i.e. dd.mm.yyyy-hh:mm:ss
-      my $dtr = Time::Piece->new($rowtime);
-      $timestring =  sprintf ( "%s-%s", $dtr->dmy('.') , $dtr->hms );
-   } else {
-     $timestring = sprintf "%s" , $rowtime ;
-   }
+   $timestring = sprintf "%s" , $rowtime ;
+   # $dt_format 
 
-   # my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
-   # my $dataline = join ( ' ' , $timestring, @$datarow ) ;
-   # my $dataline = join ( ' ' , $cumulAh, $U_batt);
-   my $dataline = sprintf ('%f %f',  $cumulAh , $U_batt);
+   my $dataline = sprintf ('%f %f %s',  $cumulAh , $U_batt, $timestring );
    $command .= $dataline . "\n";
 } 
 

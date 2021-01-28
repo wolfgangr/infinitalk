@@ -19,7 +19,7 @@ use Cwd 'abs_path'   ;
 my ( $usage , $usage_long );
 my $debug_default = 3;
 my $rrd1 = '/home/wrosner/infini/parsel/infini.rrd';
-my $rrd2 = '/home/wrosner/infini/parsel/status.rrd';
+# my $rrd2 = '/home/wrosner/infini/parsel/status.rrd';
 my $cf =  'AVERAGE' ;
 
 my $dt_format = '%F %T' ;
@@ -44,7 +44,7 @@ my $sep = '  ' ;
 my $outfile = '';
 
 
-my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 , $rrd2 ,  $q )) if $debug ;
+my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 ,   $q )) if $debug ;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ cuting edge ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # print Dumper ($rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      ) 
 
@@ -106,7 +106,7 @@ if ( defined $q_all_params{test} ) {
 	$command .= "\n";
 	$command .="set output \"$temppng\"\n";
 	$command .= "set timestamp \"\%d.\%m.\%Y \%H:\%M\"\n";
-	$command .= "set ylabel \"cumul As \"\n";
+	$command .= "set ylabel \"U (batt) in V \"\n";
 	$command .= "set title \"infini LTO energy cycle\" \n";
 
 
@@ -116,7 +116,7 @@ if ( defined $q_all_params{test} ) {
 
 
 	$command .= "set style data lines\n";
-	$command .= "set xlabel \"U_pack in V\"\n";
+	$command .= "set xlabel \"cumul Ah TODO \"\n";
 
 
 	# $command .= "plot sin(x)";
@@ -124,7 +124,7 @@ if ( defined $q_all_params{test} ) {
 	my $cusm = <<"EOCUSM";
 a=0
 cumulative_sum(x) = (a=a+x,a)
-plot '-'  using (\$2):(cumulative_sum(\$4))
+plot '-'  using (cumulative_sum(\$4)):(\$2)
 EOCUSM
 	
 	# $command .= "plot '-'  using (\$2):(\$4) ";

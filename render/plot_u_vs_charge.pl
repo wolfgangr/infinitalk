@@ -17,6 +17,9 @@ use Cwd 'abs_path'   ;
 
 
 my ( $usage , $usage_long );
+# my $usage = '';
+# my $usage_long = '';
+
 my $debug_default = 3;
 my $rrd1 = '/home/wrosner/infini/parsel/infini.rrd';
 # my $rrd2 = '/home/wrosner/infini/parsel/status.rrd';
@@ -37,21 +40,21 @@ my $res = 5 ; # both rrd are configured that way
 
 # replace cgi params by fixed settings
 # my $rrdfile = $rrd1 ; # TODO
-my $align = 1;
-my $valid_rows = -1 ;
-my $delim ='';
-my $sep = '  ' ;
-my $outfile = '';
+# my $align = 1;
+# my $valid_rows = -1 ;
+# my $delim ='';
+# my $sep = '  ' ;
+# my $outfile = '';
 
 
-my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 ,   $q )) if $debug ;
+# my_die ( scalar Dumper (  $start , $end , $res ,  $rrd1 ,   $q )) if $debug ;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ cuting edge ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # print Dumper ($rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      ) 
 
 # collect parameters for database call
 my @paramlist = ($rrd1, $cf, '-s', $start, '-e', $end);
-push @paramlist, '-a' if $align ;
-push @paramlist, ('-r', $res ) if $res ; 
+push @paramlist, '-a';  # if $align ;
+push @paramlist, ('-r', $res ) ; # if $res ; 
 
 print  Dumper ( @paramlist ) if $debug >=3 ;
 
@@ -65,13 +68,13 @@ my $dt = Time::Piece->new( $rrd_start);
 # shall we keep timezoning?
 # $dt->tzoffset = $q->param('tzoffset' ) if defined $q_all_params{ 'tzoffset' } ;
 my $dt_hr = $dt->strftime($dt_format) ;
-print  Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr ) if $debug >=3 ;
+my_die ( scalar  Dumper ( RRDs::error, $rrd_start,$step, $names, $datlen , $dt_hr )) if $debug  ;
 
 # my $dump = Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr );
 # my_die ( scalar Dumper ( RRDs::error, $rrd_start,$step, $namlen, $datlen , $dt_hr ) );
 
 # pre-process -V option ... valid rows - map the complement format
-if ( $valid_rows < 0 ) { $valid_rows = $#$names + $valid_rows +1 ; }
+# if ( $valid_rows < 0 ) { $valid_rows = $#$names + $valid_rows +1 ; }
 
 
 # ~~~~~~~~~~~~~~~~~~ prep plot cmd header ~~~~~~~~~~
@@ -141,7 +144,7 @@ for my $rowcnt (0 .. $#$data ) {
    # skip for data row's with too many NaN s
    my $defcnt = 0 ;
    foreach ( @$datarow )  {  $defcnt++ if defined $_ }
-   next unless ($defcnt >= $valid_rows) ;
+   next unless ($defcnt >= 2) ;
 
    # time string format selection
    my $timestring;
@@ -158,7 +161,8 @@ for my $rowcnt (0 .. $#$data ) {
      $timestring = sprintf "%s" , $rowtime ;
    }
 
-   my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
+   # my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
+   my $dataline = join ( ' ' , $timestring, @$datarow ) ;
    $command .= $dataline . "\n";
 } 
 
@@ -187,7 +191,7 @@ exit ;
 
 # my_join : extended join with delim and seperators
 # my_join ( delim, sep, @stuff )
-sub my_join {
+sub my_join_DONOTUSE {
   my $delim = shift  @_ ;
   my $sep   = shift  @_ ;
   my $rv  =   return join ( $sep, map { sprintf ( "%s%s%s", $delim, $_ ,$delim) } @_ ) ;
@@ -197,11 +201,12 @@ sub my_join {
 # resemble "die", supply ($message $usage)
 sub my_die {
 	my ($msg, $usage) = @_ ;
+	# my ($msg) = @_ ;
 	print $q->header(-type =>  'text/html',  -charset => 'utf8' );
 	print "<html><pre>";
 	print "\n$msg\n";
 	print "============================================================" . "\n";
-	print $usage ;
+	# print $usage ;
 	print "</pre></html>";
 	exit;
 
